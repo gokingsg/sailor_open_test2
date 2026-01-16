@@ -1,0 +1,75 @@
+
+import React, { useState } from 'react';
+import { motion, AnimatePresence, useScroll, useTransform } from 'framer-motion';
+import { Menu, X, Info, BookOpen, BarChart3, Gift, UserPlus, MessageSquare } from 'lucide-react';
+import { ASSETS } from '../constants';
+
+export const MobileNav = () => {
+  const [isOpen, setIsOpen] = useState(false);
+  const { scrollY } = useScroll();
+  const headerHeight = useTransform(scrollY, [0, 100], ["8rem", "4rem"]);
+  const logoSize = useTransform(scrollY, [0, 100], ["8rem", "4rem"]);
+  const logoY = useTransform(scrollY, [0, 100], ["1rem", "0rem"]);
+
+  const scrollTo = (id: string) => {
+    const el = document.getElementById(id);
+    if (el) el.scrollIntoView({ behavior: 'smooth' });
+    setIsOpen(false);
+  };
+
+  return (
+    <div className="lg:hidden fixed top-0 left-0 w-full z-[100]">
+      {/* Fixed Framer Motion type error by casting style to any */}
+      <motion.div 
+        style={{ height: headerHeight } as any}
+        className="relative flex items-center justify-center bg-[#000080] text-white shadow-lg px-6 overflow-visible"
+      >
+        {/* Fixed Framer Motion type error by casting style to any including transform property 'y' */}
+        <motion.div 
+          style={{ width: logoSize, height: logoSize, y: logoY } as any}
+          className="flex items-center justify-center cursor-pointer"
+          onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+        >
+           <img src={ASSETS.logo} alt="Logo" className="w-full h-full object-contain" />
+        </motion.div>
+        
+        <button onClick={() => setIsOpen(!isOpen)} className="absolute right-6 p-2 z-[110]">
+          {isOpen ? <X size={28} /> : <Menu size={28} />}
+        </button>
+      </motion.div>
+      
+      <AnimatePresence>
+        {isOpen && (
+          // Fixed Framer Motion type error by casting animation props to any
+          <motion.div 
+            {...({
+              initial: { opacity: 0, y: -20 },
+              animate: { opacity: 1, y: 0 },
+              exit: { opacity: 0, y: -20 }
+            } as any)}
+            className="bg-[#000080] p-8 text-white flex flex-col gap-8 shadow-2xl absolute top-full left-0 w-full z-[105]"
+          >
+            <button onClick={() => scrollTo('about-section')} className="text-2xl font-bold flex items-center gap-4">
+              <Info className="text-[#4c8bf5]" /> About
+            </button>
+            <button onClick={() => scrollTo('rules-section')} className="text-2xl font-bold flex items-center gap-4">
+              <BookOpen className="text-[#4c8bf5]" /> How We Play
+            </button>
+            <button onClick={() => scrollTo('leaderboard-section')} className="text-2xl font-bold flex items-center gap-4">
+              <BarChart3 className="text-[#4c8bf5]" /> Leaderboard
+            </button>
+            <button onClick={() => scrollTo('prizes-section')} className="text-2xl font-bold flex items-center gap-4">
+              <Gift className="text-[#4c8bf5]" /> Prizes
+            </button>
+            <button onClick={() => scrollTo('registration-flow')} className="text-2xl font-bold flex items-center gap-4">
+              <UserPlus className="text-[#4c8bf5]" /> Register
+            </button>
+            <button onClick={() => scrollTo('contact-section')} className="text-2xl font-bold flex items-center gap-4">
+              <MessageSquare className="text-[#4c8bf5]" /> Contact
+            </button>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+};
