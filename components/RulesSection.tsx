@@ -3,7 +3,8 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { AlertCircle, Zap, ShieldCheck, Handshake } from 'lucide-react';
 
-const RuleTable = ({ title, data }: { title: string, data: { label: string, value: string | React.ReactNode }[] }) => (
+// Simplified data type for RuleTable to ensure React nodes are handled correctly
+const RuleTable = ({ title, data }: { title: string, data: { label: string, value: React.ReactNode }[] }) => (
   <div className="mb-12 w-full">
     <h4 className="text-xl font-black text-[#000080] mb-5 uppercase tracking-widest flex items-center gap-3">
       <span className="w-2 h-6 bg-[#4c8bf5] rounded-full"></span>
@@ -28,7 +29,8 @@ const RuleTable = ({ title, data }: { title: string, data: { label: string, valu
   </div>
 );
 
-const SailorsEditionNote = ({ children }: { children: React.ReactNode }) => (
+// Fix: Make children optional to resolve the "missing children" TS error during JSX validation
+const SailorsEditionNote = ({ children }: { children?: React.ReactNode }) => (
   <div className="mt-3 p-4 bg-blue-50/50 border-l-4 border-[#4c8bf5] rounded-r-xl">
     <div className="flex items-center gap-2 mb-1 text-[#4c8bf5] font-black text-[10px] uppercase tracking-wider">
       <Zap size={14} />
@@ -43,6 +45,7 @@ const SailorsEditionNote = ({ children }: { children: React.ReactNode }) => (
 export const RulesSection = () => {
   return (
     <section id="rules-section" className="relative min-h-screen px-6 lg:px-12 xl:px-24 py-20 lg:py-32 bg-slate-50">
+      {/* Fix: casting Framer Motion props to any to avoid common library type mismatches */}
       <motion.div 
         {...({
           initial: { opacity: 0, y: 20 },

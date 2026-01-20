@@ -9,23 +9,30 @@ export const ASSETS = {
 
 export const CATEGORIES = [
   "Men's Singles",
-  "Women's Singles",
-  "Men's Doubles",
-  "Women's Doubles"
+  "Women's Singles"
 ];
 
 export const LOCATIONS: Record<string, string[]> = {
-  "China": ["Shenzhen", "Shanghai", "Beijing"],
-  "Indonesia": ["Jakarta", "Yogyakarta"],
-  "Singapore": ["Singapore"],
-  "Vietnam": ["Ho Chi Minh City", "Hanoi"],
-  "Philippines": ["Manila"],
-  "Brazil": ["Sao Paulo"],
-  "Thailand": ["Bangkok"],
-  "Taiwan": ["Taipei"],
-  "Malaysia": ["Kuala Lumpur"],
-  "Korea": ["Seoul"],
-  "Mexico": ["Mexico City"]
+  "Brazil": ["Sao Paulo", "Others"],
+  "China": ["Beijing", "Shanghai", "Shenzhen", "Others"],
+  "Indonesia": ["Jakarta", "Yogyakarta", "Solo", "Others"],
+  "Korea": ["Seoul", "Others"],
+  "Malaysia": ["Kuala Lumpur", "Penang", "Perak", "Others"],
+  "Mexico": ["Mexico City", "Others"],
+  "Philippines": ["Mandaluyong", "Laguna", "Bulacan", "Others"],
+  "Singapore": ["Singapore", "Others"],
+  "Taiwan": ["Taipei", "Taichung", "Others"],
+  "Thailand": ["Bangkok", "Others"],
+  "Vietnam": ["Hanoi", "Ho Chi Minh City", "Others"]
+};
+
+export const RATING_PROGRAMS = ["NTRP", "Brazil Class", "WTN", "UTR"];
+
+export const RATINGS_MAP: Record<string, string[]> = {
+  "NTRP": ["1.5 – 2.0", "3.0 – 3.5", "4.0 – 4.5", "5.0 – 6.0"],
+  "Brazil Class": ["5ª Classe", "4ª / 3ª Classe", "2ª Classe", "1ª Classe"],
+  "WTN": ["35 – 40", "25 – 30", "15 – 20", "1 – 10"],
+  "UTR": ["1 – 2", "3 – 5", "6 – 8", "9 – 12"]
 };
 
 export const QUESTIONS: MatchmakerQuestion[] = [

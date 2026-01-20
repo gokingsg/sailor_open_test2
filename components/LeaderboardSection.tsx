@@ -1,10 +1,23 @@
 
-import React from 'react';
-import { motion } from 'framer-motion';
-import { Info, HelpCircle } from 'lucide-react';
-import { LEADERBOARD_DATA } from '../constants';
+import React, { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Info, HelpCircle, ChevronDown, Filter } from 'lucide-react';
+import { LEADERBOARD_DATA, LOCATIONS } from '../constants';
+
+const CATEGORIES_LEADERBOARD = ["Mens", "Womens"];
 
 export const LeaderboardSection = () => {
+  const [selectedMarket, setSelectedMarket] = useState('Singapore');
+  const [selectedCity, setSelectedCity] = useState('Singapore');
+  const [selectedCategory, setSelectedCategory] = useState('Mens');
+
+  // Update city when market changes
+  useEffect(() => {
+    if (LOCATIONS[selectedMarket]) {
+      setSelectedCity(LOCATIONS[selectedMarket][0]);
+    }
+  }, [selectedMarket]);
+
   return (
     <section id="leaderboard-section" className="relative py-16 lg:py-24 px-6 lg:px-12 xl:px-24 bg-white">
       {/* Fixed Framer Motion type error by casting props to any */}
@@ -16,9 +29,84 @@ export const LeaderboardSection = () => {
         } as any)}
         className="w-full mx-auto"
       >
-        <h1 className="text-3xl lg:text-7xl font-black text-[#000080] mb-8 lg:mb-12 leading-tight text-left">
-          LEADERBOARD
-        </h1>
+        <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-8 mb-12">
+          <div>
+            <h1 className="text-3xl lg:text-7xl font-black text-[#000080] leading-tight text-left mb-2">
+              LEADERBOARD
+            </h1>
+            <p className="text-slate-400 font-bold uppercase tracking-widest text-sm flex items-center gap-2">
+              <Filter size={14} className="text-[#4c8bf5]" />
+              Filter by region & category
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 w-full lg:w-auto">
+            {/* Market Filter */}
+            <div className="space-y-2">
+              <label className="text-[10px] font-black text-[#000080] uppercase tracking-wider ml-1">Market</label>
+              <div className="relative">
+                <select 
+                  value={selectedMarket}
+                  onChange={(e) => setSelectedMarket(e.target.value)}
+                  className="w-full lg:w-48 px-4 py-3 bg-slate-50 border border-slate-100 rounded-xl appearance-none focus:ring-2 focus:ring-[#4c8bf5] outline-none font-bold text-[#000080] text-sm cursor-pointer hover:bg-slate-100 transition-colors"
+                >
+                  {Object.keys(LOCATIONS).sort().map(market => (
+                    <option key={market} value={market}>{market}</option>
+                  ))}
+                </select>
+                <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 text-[#4c8bf5] pointer-events-none" size={16} />
+              </div>
+            </div>
+
+            {/* City Filter */}
+            <div className="space-y-2">
+              <label className="text-[10px] font-black text-[#000080] uppercase tracking-wider ml-1">City</label>
+              <div className="relative">
+                <select 
+                  value={selectedCity}
+                  onChange={(e) => setSelectedCity(e.target.value)}
+                  className="w-full lg:w-48 px-4 py-3 bg-slate-50 border border-slate-100 rounded-xl appearance-none focus:ring-2 focus:ring-[#4c8bf5] outline-none font-bold text-[#000080] text-sm cursor-pointer hover:bg-slate-100 transition-colors"
+                >
+                  {LOCATIONS[selectedMarket]?.map(city => (
+                    <option key={city} value={city}>{city}</option>
+                  ))}
+                </select>
+                <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 text-[#4c8bf5] pointer-events-none" size={16} />
+              </div>
+            </div>
+
+            {/* Category Filter */}
+            <div className="space-y-2">
+              <label className="text-[10px] font-black text-[#000080] uppercase tracking-wider ml-1">Category</label>
+              <div className="relative">
+                <select 
+                  value={selectedCategory}
+                  onChange={(e) => setSelectedCategory(e.target.value)}
+                  className="w-full lg:w-48 px-4 py-3 bg-slate-50 border border-slate-100 rounded-xl appearance-none focus:ring-2 focus:ring-[#4c8bf5] outline-none font-bold text-[#000080] text-sm cursor-pointer hover:bg-slate-100 transition-colors"
+                >
+                  {CATEGORIES_LEADERBOARD.map(cat => (
+                    <option key={cat} value={cat}>{cat}</option>
+                  ))}
+                </select>
+                <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 text-[#4c8bf5] pointer-events-none" size={16} />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="mb-6 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+             <div className="px-4 py-1 bg-[#000080] text-white rounded-full text-[10px] font-black uppercase tracking-widest">
+                {selectedMarket}
+             </div>
+             <div className="px-4 py-1 bg-[#4c8bf5] text-white rounded-full text-[10px] font-black uppercase tracking-widest">
+                {selectedCity}
+             </div>
+             <div className="px-4 py-1 bg-slate-200 text-slate-600 rounded-full text-[10px] font-black uppercase tracking-widest">
+                {selectedCategory}
+             </div>
+          </div>
+        </div>
         
         <div className="overflow-x-auto rounded-[2rem] border border-slate-100 shadow-2xl shadow-slate-200/50">
           <table className="w-full text-left border-collapse min-w-[1000px]">
@@ -53,6 +141,13 @@ export const LeaderboardSection = () => {
                   <td className="px-6 py-5 font-black text-[#000080] text-center">{entry.points}</td>
                 </tr>
               ))}
+              {LEADERBOARD_DATA.length === 0 && (
+                <tr>
+                   <td colSpan={11} className="px-6 py-12 text-center text-slate-400 font-bold italic">
+                      No match results recorded yet for this selection.
+                   </td>
+                </tr>
+              )}
             </tbody>
           </table>
         </div>

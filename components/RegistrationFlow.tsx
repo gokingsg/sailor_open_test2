@@ -2,23 +2,23 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronDown, Check, Trophy } from 'lucide-react';
-import { CATEGORIES, LOCATIONS, QUESTIONS } from '../constants';
+import { CATEGORIES, LOCATIONS, QUESTIONS, RATING_PROGRAMS, RATINGS_MAP } from '../constants';
 
 export const RegistrationFlow = () => {
   const [flowStep, setFlowStep] = useState<'info' | 'matchmaker' | 'success'>('info');
   const [currentQuestionIdx, setCurrentQuestionIdx] = useState(0);
   const [answers, setAnswers] = useState<Record<number, string | string[]>>({});
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
-  const [partnerName, setPartnerName] = useState('');
-  const [partnerEmail, setPartnerEmail] = useState('');
   
   const [selectedCountry, setSelectedCountry] = useState('Singapore');
   const [selectedCity, setSelectedCity] = useState('Singapore');
+  const [otherCity, setOtherCity] = useState('');
+  
+  const [ratingProgram, setRatingProgram] = useState('');
+  const [ratingValue, setRatingValue] = useState('');
 
   const currentQuestion = QUESTIONS[currentQuestionIdx];
   const matchmakerProgress = ((currentQuestionIdx + 1) / QUESTIONS.length) * 100;
-
-  const isDoublesSelected = selectedCategories.some(cat => cat.toLowerCase().includes('doubles'));
 
   const handleCountryChange = (country: string) => {
     setSelectedCountry(country);
@@ -27,24 +27,23 @@ export const RegistrationFlow = () => {
     } else {
       setSelectedCity('');
     }
+    setOtherCity('');
   };
 
   const handleCategoryToggle = (cat: string) => {
     setSelectedCategories(prev => {
-      const isSelectingMen = cat.startsWith("Men");
-      const isSelectingWomen = cat.startsWith("Women");
-
-      let next = [...prev];
-
-      if (isSelectingMen) {
-        next = next.filter(c => !c.startsWith("Women"));
-      } else if (isSelectingWomen) {
-        next = next.filter(c => !c.startsWith("Men"));
-      }
-
-      if (next.includes(cat)) {
-        return next.filter(c => c !== cat);
+      if (prev.includes(cat)) {
+        return prev.filter(c => c !== cat);
       } else {
+        const isSelectingMen = cat.startsWith("Men");
+        const isSelectingWomen = cat.startsWith("Women");
+
+        let next = [...prev];
+        if (isSelectingMen) {
+          next = next.filter(c => !c.startsWith("Women"));
+        } else if (isSelectingWomen) {
+          next = next.filter(c => !c.startsWith("Men"));
+        }
         return [...next, cat];
       }
     });
@@ -53,11 +52,15 @@ export const RegistrationFlow = () => {
   const handleInfoSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (selectedCategories.length === 0) {
-      alert("Please select at least one category to proceed.");
+      alert("Please select a category to proceed.");
       return;
     }
     if (!selectedCountry || !selectedCity) {
-      alert("Please select both country and city.");
+      alert("Please select both market and office location.");
+      return;
+    }
+    if (selectedCity === 'Others' && !otherCity.trim()) {
+      alert("Please specify your city.");
       return;
     }
     setFlowStep('matchmaker');
@@ -93,7 +96,6 @@ export const RegistrationFlow = () => {
       <div className="max-w-3xl w-full mx-auto">
         <AnimatePresence mode="wait">
           {flowStep === 'info' && (
-            // Fixed Framer Motion type error by casting props to any
             <motion.div 
               key="info"
               {...({
@@ -108,11 +110,11 @@ export const RegistrationFlow = () => {
                 <div className="space-y-6">
                   <div>
                     <label className="block text-sm font-bold text-[#000080] mb-2">Full Name</label>
-                    <input required type="text" placeholder="Jane Wang" className="w-full px-6 py-4 bg-slate-50 border border-slate-100 rounded-xl focus:ring-2 focus:ring-[#4c8bf5] outline-none transition-all" />
+                    <input required type="text" placeholder="Jane Wang" className="w-full px-6 py-4 bg-slate-50 border border-slate-100 rounded-xl focus:ring-2 focus:ring-[#4c8bf5] outline-none transition-all font-medium" />
                   </div>
                   <div>
                     <label className="block text-sm font-bold text-[#000080] mb-2">Sea Email Address</label>
-                    <input required type="email" placeholder="Jane.W@sea.com" className="w-full px-6 py-4 bg-slate-50 border border-slate-100 rounded-xl focus:ring-2 focus:ring-[#4c8bf5] outline-none transition-all" />
+                    <input required type="email" placeholder="Jane.W@sea.com" className="w-full px-6 py-4 bg-slate-50 border border-slate-100 rounded-xl focus:ring-2 focus:ring-[#4c8bf5] outline-none transition-all font-medium" />
                   </div>
 
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -123,10 +125,10 @@ export const RegistrationFlow = () => {
                           required 
                           value={selectedCountry}
                           onChange={(e) => handleCountryChange(e.target.value)}
-                          className="w-full px-6 py-4 bg-slate-50 border border-slate-100 rounded-xl appearance-none focus:ring-2 focus:ring-[#4c8bf5] outline-none"
+                          className="w-full px-6 py-4 bg-slate-50 border border-slate-100 rounded-xl appearance-none focus:ring-2 focus:ring-[#4c8bf5] outline-none font-medium"
                         >
                           <option value="">Select Market</option>
-                          {Object.keys(LOCATIONS).map(country => (
+                          {Object.keys(LOCATIONS).sort().map(country => (
                             <option key={country} value={country}>{country}</option>
                           ))}
                         </select>
@@ -134,16 +136,19 @@ export const RegistrationFlow = () => {
                       </div>
                     </div>
                     <div>
-                      <label className="block text-sm font-bold text-[#000080] mb-2">City (Match Location)</label>
+                      <label className="block text-sm font-bold text-[#000080] mb-2">Office Location (City)</label>
                       <div className="relative">
                         <select 
                           required 
                           disabled={!selectedCountry}
                           value={selectedCity}
-                          onChange={(e) => setSelectedCity(e.target.value)}
-                          className="w-full px-6 py-4 bg-slate-50 border border-slate-100 rounded-xl appearance-none focus:ring-2 focus:ring-[#4c8bf5] outline-none disabled:opacity-50"
+                          onChange={(e) => {
+                            setSelectedCity(e.target.value);
+                            if (e.target.value !== 'Others') setOtherCity('');
+                          }}
+                          className="w-full px-6 py-4 bg-slate-50 border border-slate-100 rounded-xl appearance-none focus:ring-2 focus:ring-[#4c8bf5] outline-none disabled:opacity-50 font-medium"
                         >
-                          <option value="">Select City</option>
+                          <option value="">Select Office</option>
                           {selectedCountry && LOCATIONS[selectedCountry].map(city => (
                             <option key={city} value={city}>{city}</option>
                           ))}
@@ -152,10 +157,33 @@ export const RegistrationFlow = () => {
                       </div>
                     </div>
                   </div>
+
+                  <AnimatePresence>
+                    {selectedCity === 'Others' && (
+                      <motion.div
+                        {...({
+                          initial: { opacity: 0, height: 0 },
+                          animate: { opacity: 1, height: 'auto' },
+                          exit: { opacity: 0, height: 0 }
+                        } as any)}
+                        className="overflow-hidden"
+                      >
+                        <label className="block text-sm font-bold text-[#000080] mb-2">City</label>
+                        <input 
+                          required 
+                          type="text" 
+                          value={otherCity}
+                          onChange={(e) => setOtherCity(e.target.value)}
+                          placeholder="Please enter your city" 
+                          className="w-full px-6 py-4 bg-slate-50 border border-slate-100 rounded-xl focus:ring-2 focus:ring-[#4c8bf5] outline-none transition-all font-medium" 
+                        />
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
                   
                   <div>
-                    <label className="block text-sm font-bold text-[#000080] mb-4">Categories (Select all you wish to join)</label>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-6">
+                    <label className="block text-sm font-bold text-[#000080] mb-4">Categories</label>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                       {CATEGORIES.map(cat => (
                         <button
                           key={cat}
@@ -172,33 +200,49 @@ export const RegistrationFlow = () => {
                         </button>
                       ))}
                     </div>
+                  </div>
 
-                    <AnimatePresence>
-                      {isDoublesSelected && (
-                        // Fixed Framer Motion type error by casting props to any
-                        <motion.div
-                          {...({
-                            initial: { opacity: 0, height: 0, marginTop: 0 },
-                            animate: { opacity: 1, height: 'auto', marginTop: 24 },
-                            exit: { opacity: 0, height: 0, marginTop: 0 }
-                          } as any)}
-                          className="overflow-hidden px-1 -mx-1 pb-1 space-y-6"
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-4">
+                    <div>
+                      <label className="block text-sm font-bold text-[#000080] mb-2">Rating Program (Optional)</label>
+                      <div className="relative">
+                        <select 
+                          value={ratingProgram}
+                          onChange={(e) => {
+                            setRatingProgram(e.target.value);
+                            setRatingValue('');
+                          }}
+                          className="w-full px-6 py-4 bg-slate-50 border border-slate-100 rounded-xl appearance-none focus:ring-2 focus:ring-[#4c8bf5] outline-none font-medium"
                         >
-                          <div>
-                            <label className="block text-sm font-bold text-[#000080] mb-2">Partner's Full Name</label>
-                            <input required type="text" value={partnerName} onChange={(e) => setPartnerName(e.target.value)} placeholder="Partner's Name" className="w-full px-6 py-4 bg-slate-50 border border-slate-100 rounded-xl focus:ring-2 focus:ring-[#4c8bf5] outline-none transition-all" />
-                          </div>
-                          <div>
-                            <label className="block text-sm font-bold text-[#000080] mb-2">Partner's Sea Email Address</label>
-                            <input required type="email" value={partnerEmail} onChange={(e) => setPartnerEmail(e.target.value)} placeholder="Partner.Email@sea.com" className="w-full px-6 py-4 bg-slate-50 border border-slate-100 rounded-xl focus:ring-2 focus:ring-[#4c8bf5] outline-none transition-all" />
-                          </div>
-                        </motion.div>
-                      )}
-                    </AnimatePresence>
+                          <option value="">Select Program</option>
+                          {RATING_PROGRAMS.map(prog => (
+                            <option key={prog} value={prog}>{prog}</option>
+                          ))}
+                        </select>
+                        <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" size={18} />
+                      </div>
+                    </div>
+                    <div>
+                      <label className="block text-sm font-bold text-[#000080] mb-2">Rating</label>
+                      <div className="relative">
+                        <select 
+                          disabled={!ratingProgram}
+                          value={ratingValue}
+                          onChange={(e) => setRatingValue(e.target.value)}
+                          className="w-full px-6 py-4 bg-slate-50 border border-slate-100 rounded-xl appearance-none focus:ring-2 focus:ring-[#4c8bf5] outline-none disabled:opacity-50 font-medium"
+                        >
+                          <option value="">Select Rating</option>
+                          {ratingProgram && RATINGS_MAP[ratingProgram]?.map(rate => (
+                            <option key={rate} value={rate}>{rate}</option>
+                          ))}
+                        </select>
+                        <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" size={18} />
+                      </div>
+                    </div>
                   </div>
                 </div>
 
-                <button type="submit" className="w-full py-5 bg-[#4c8bf5] hover:bg-[#3b7ae4] text-white rounded-xl font-black text-lg transition-all shadow-xl shadow-[#4c8bf5]/20 active:scale-95 mt-4">
+                <button type="submit" className="w-full py-5 bg-[#4c8bf5] hover:bg-[#3b7ae4] text-white rounded-xl font-black text-lg transition-all shadow-xl shadow-[#4c8bf5]/20 active:scale-95 mt-4 uppercase tracking-wider">
                   Next
                 </button>
               </form>
@@ -206,7 +250,6 @@ export const RegistrationFlow = () => {
           )}
 
           {flowStep === 'matchmaker' && (
-            // Fixed Framer Motion type error by casting props to any
             <motion.div 
               key="matchmaker"
               {...({
@@ -218,7 +261,6 @@ export const RegistrationFlow = () => {
             >
               <h2 className="text-3xl font-black text-center text-[#000080] mb-8">Tennis Level Matchmaker</h2>
               <div className="w-full h-3 bg-slate-100 rounded-full mb-12 overflow-hidden">
-                {/* Fixed Framer Motion type error by casting props to any */}
                 <motion.div {...({ initial: { width: 0 }, animate: { width: `${matchmakerProgress}%` } } as any)} className="h-full bg-[#4c8bf5] rounded-full" />
               </div>
               <div className="space-y-8">
@@ -250,7 +292,6 @@ export const RegistrationFlow = () => {
           )}
 
           {flowStep === 'success' && (
-            // Fixed Framer Motion type error by casting props to any
             <motion.div 
               key="success"
               {...({
@@ -263,8 +304,21 @@ export const RegistrationFlow = () => {
                 <Trophy size={40} />
               </div>
               <h2 className="text-3xl font-black text-[#000080] mb-4">You're All Set!</h2>
-              <p className="text-slate-500 mb-8 leading-relaxed">We'll analyze your level and successful registration will be notified shortly</p>
-              <button onClick={() => { setFlowStep('info'); setCurrentQuestionIdx(0); setAnswers({}); setSelectedCategories([]); setPartnerName(''); setPartnerEmail(''); setSelectedCountry('Singapore'); setSelectedCity('Singapore'); }} className="px-10 py-4 bg-[#4c8bf5] hover:bg-[#3b7ae4] text-white rounded-xl font-bold shadow-lg shadow-[#4c8bf5]/20 active:scale-95 transition-all">
+              <p className="text-slate-500 mb-8 leading-relaxed font-medium">We'll analyze your level and successful registration will be notified shortly.</p>
+              <button 
+                onClick={() => { 
+                  setFlowStep('info'); 
+                  setCurrentQuestionIdx(0); 
+                  setAnswers({}); 
+                  setSelectedCategories([]); 
+                  setSelectedCountry('Singapore'); 
+                  setSelectedCity('Singapore');
+                  setOtherCity('');
+                  setRatingProgram('');
+                  setRatingValue('');
+                }} 
+                className="px-10 py-4 bg-[#4c8bf5] hover:bg-[#3b7ae4] text-white rounded-xl font-bold shadow-lg shadow-[#4c8bf5]/20 active:scale-95 transition-all"
+              >
                 Start Over
               </button>
             </motion.div>
