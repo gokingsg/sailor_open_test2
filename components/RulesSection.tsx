@@ -1,51 +1,90 @@
 
 import React from 'react';
 import { motion } from 'framer-motion';
-import { AlertCircle, Zap, ShieldCheck, Handshake } from 'lucide-react';
+import { 
+  Trophy, 
+  Zap, 
+  BookOpen, 
+  Handshake, 
+  Target, 
+  Clock, 
+  Calendar, 
+  ChevronRight,
+  ShieldCheck,
+  AlertCircle
+} from 'lucide-react';
 
-// Simplified data type for RuleTable to ensure React nodes are handled correctly
-const RuleTable = ({ title, data }: { title: string, data: { label: string, value: React.ReactNode }[] }) => (
-  <div className="mb-12 w-full">
-    <h4 className="text-xl font-black text-[#000080] mb-5 uppercase tracking-widest flex items-center gap-3">
-      <span className="w-2 h-6 bg-[#4c8bf5] rounded-full"></span>
-      {title}
-    </h4>
-    <div className="overflow-hidden rounded-3xl border border-slate-200 shadow-sm bg-white">
-      <table className="w-full text-left">
-        <tbody className="divide-y divide-slate-100">
-          {data.map((row, idx) => (
-            <tr key={idx} className="hover:bg-slate-50/50 transition-colors">
-              <td className="px-8 py-5 font-bold text-[#000080] border-r border-slate-100 bg-slate-50/30 w-1/3 text-sm">
-                {row.label}
-              </td>
-              <td className="px-8 py-5 text-slate-600 font-medium text-sm leading-relaxed">
-                {row.value}
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+const JourneyStage = ({ number, title, subtitle, items }: { number: number, title: string, subtitle?: string, items: React.ReactNode[] }) => (
+  <div className="relative pl-12 pb-16 last:pb-0 border-l-2 border-slate-100 last:border-0">
+    <div className="absolute left-[-17px] top-0 w-8 h-8 rounded-full bg-[#000080] flex items-center justify-center text-white font-black text-sm z-10 shadow-lg shadow-[#000080]/20">
+      {number}
+    </div>
+    <div className="bg-white rounded-[2rem] p-8 border border-slate-100 shadow-sm hover:shadow-md transition-shadow">
+      <h3 className="text-2xl font-black text-[#000080] mb-2 uppercase">{title}</h3>
+      {subtitle && <p className="text-[#4c8bf5] font-bold text-sm mb-6">{subtitle}</p>}
+      <div className="space-y-4">
+        {items.map((item, i) => (
+          <div key={i} className="flex gap-3 text-slate-600">
+            <div className="mt-1.5 w-1.5 h-1.5 rounded-full bg-[#4c8bf5] flex-shrink-0" />
+            <div className="text-sm font-medium leading-relaxed">{item}</div>
+          </div>
+        ))}
+      </div>
     </div>
   </div>
 );
 
-// Fix: Make children optional to resolve the "missing children" TS error during JSX validation
-const SailorsEditionNote = ({ children }: { children?: React.ReactNode }) => (
-  <div className="mt-3 p-4 bg-blue-50/50 border-l-4 border-[#4c8bf5] rounded-r-xl">
-    <div className="flex items-center gap-2 mb-1 text-[#4c8bf5] font-black text-[10px] uppercase tracking-wider">
-      <Zap size={14} />
-      Sailor's Edition Rule
-    </div>
-    <div className="text-[#4c8bf5] text-sm font-bold italic leading-relaxed">
-      {children}
+const ScoringTable = () => (
+  <div className="overflow-x-auto rounded-[2rem] border border-slate-200 shadow-xl bg-white mb-12">
+    <table className="w-full text-left border-collapse min-w-[800px]">
+      <thead>
+        <tr className="bg-[#000080] text-white">
+          <th className="px-8 py-6 font-black uppercase tracking-widest text-xs border-r border-white/10">Feature</th>
+          <th className="px-8 py-6 font-black uppercase tracking-widest text-xs border-r border-white/10 bg-[#000080]/90">Traditional Tennis</th>
+          <th className="px-8 py-6 font-black uppercase tracking-widest text-xs border-r border-white/10 bg-[#4c8bf5]">Sailors Fast6 Tennis</th>
+          <th className="px-8 py-6 font-black uppercase tracking-widest text-xs bg-[#4c8bf5]/80">Sailors Fast10 Tennis</th>
+        </tr>
+      </thead>
+      <tbody className="divide-y divide-slate-100">
+        {[
+          { feature: "Set Winner", traditional: "First to 6 games (must lead by 2)", fast6: "First to 6 games (must lead by 2)", fast10: "First to 10 games (must lead by 2)" },
+          { feature: "Deuce", traditional: "Advantage / Deuce cycle", fast6: "Sudden Death: Next point wins the game. Receiver to choose the side (left or right)", fast10: "Sudden Death: Next point wins the game. Receiver to choose the side (left or right)" },
+          { feature: "Tie-breaker", traditional: "Trigger at 6-6 games each. First to 7 points by at least 2 points margin (e.g. 7-3, 8-6)", fast6: "Trigger at 6-6 games each. First to 7 points by at least 1 point margin (e.g. 7-3, 7-6)", fast10: "Trigger at 10-10 games each. First to 7 points by at least 1 point margin (e.g. 7-3, 7-6)" },
+          { feature: "Serves", traditional: "2 serves per point", fast6: "1 serve per point", fast10: "1 serve per point" },
+          { feature: "Typical Duration", traditional: "60–90 minutes", fast6: "40–50 minutes", fast10: "60–80 minutes" },
+        ].map((row, idx) => (
+          <tr key={idx} className="group hover:bg-slate-50/50 transition-colors">
+            <td className="px-8 py-5 font-black text-[#000080] text-xs uppercase tracking-wider border-r border-slate-100 bg-slate-50/30">{row.feature}</td>
+            <td className="px-8 py-5 text-slate-500 font-medium text-sm border-r border-slate-100">{row.traditional}</td>
+            <td className="px-8 py-5 text-[#000080] font-bold text-sm border-r border-slate-100 bg-[#4c8bf5]/5">{row.fast6}</td>
+            <td className="px-8 py-5 text-[#000080] font-bold text-sm bg-[#4c8bf5]/10">{row.fast10}</td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </div>
+);
+
+const RuleCard = ({ title, items }: { title: string, items: { label: string, desc: string }[] }) => (
+  <div className="bg-white rounded-[2rem] p-8 border border-slate-100 shadow-sm">
+    <h4 className="text-lg font-black text-[#000080] mb-6 flex items-center gap-3">
+      <div className="w-2 h-6 bg-[#4c8bf5] rounded-full" />
+      {title}
+    </h4>
+    <div className="space-y-6">
+      {items.map((item, i) => (
+        <div key={i}>
+          <div className="text-[#000080] font-black text-sm mb-1 uppercase tracking-tighter">{item.label}</div>
+          <div className="text-slate-500 text-sm font-medium leading-relaxed">{item.desc}</div>
+        </div>
+      ))}
     </div>
   </div>
 );
 
 export const RulesSection = () => {
   return (
-    <section id="rules-section" className="relative min-h-screen px-6 lg:px-12 xl:px-24 py-20 lg:py-32 bg-slate-50">
-      {/* Fix: casting Framer Motion props to any to avoid common library type mismatches */}
+    <section id="rules-section" className="relative px-6 lg:px-12 xl:px-24 py-20 lg:py-32 bg-slate-50">
       <motion.div 
         {...({
           initial: { opacity: 0, y: 20 },
@@ -54,153 +93,168 @@ export const RulesSection = () => {
         } as any)}
         className="max-w-screen-xl mx-auto"
       >
-        <header className="mb-16">
-          <h1 className="text-4xl lg:text-7xl font-black text-[#000080] mb-8 leading-tight">
+        <header className="mb-24">
+          <h1 className="text-3xl lg:text-7xl font-black text-[#000080] mb-8 leading-tight">
             HOW WE PLAY
           </h1>
-          <div className="max-w-4xl p-8 bg-white rounded-[2.5rem] border border-slate-200 shadow-xl shadow-slate-200/40">
+          <div className="max-w-4xl p-8 lg:p-10 bg-white rounded-[2.5rem] border border-slate-200 shadow-xl shadow-slate-200/40 relative overflow-hidden group">
+            <div className="absolute top-0 right-0 w-32 h-32 bg-[#4c8bf5]/5 rounded-full -mr-16 -mt-16 blur-2xl group-hover:bg-[#4c8bf5]/10 transition-colors" />
             <p className="text-lg lg:text-xl text-slate-600 leading-relaxed font-medium">
-              Tennis scoring can feel like a different language, but it’s easy once you get the rhythm! To keep things fun, fast-moving and less formal, we have adapted the traditional rules into <span className="text-[#4c8bf5] font-black">The Sailor’s Edition Rules.</span>
+              Welcome to the Road to Finals! This competition is designed to be fun, fast-paced, and
+              inclusive for all employees. Whether you are a seasoned player or a beginner, this guide will
+              help you navigate through everything you need to know, from the basic rules and your first local
+              match, all the way to the Global Championship Finals.
             </p>
           </div>
         </header>
 
-        <section className="mb-24">
-          <h2 className="text-2xl lg:text-4xl font-black text-[#000080] mb-12 uppercase tracking-tight">
-            Traditional Match Rules (The Sailor's Cut)
-          </h2>
+        {/* 1. The Tournament Journey */}
+        <div className="mb-32">
+          <div className="flex items-center gap-4 mb-12">
+            <div className="p-3 bg-[#000080] text-white rounded-2xl shadow-lg">
+              <Trophy size={28} />
+            </div>
+            <h2 className="text-3xl lg:text-5xl font-black text-[#000080] uppercase">The Tournament Journey</h2>
+          </div>
 
-          <RuleTable 
-            title="1. Basic Scoring System"
-            data={[
-              { label: "Points", value: "Scored in a unique sequence: Love (0), 15, 30, 40. The next point wins the game." },
-              { 
-                label: "Deuce (40-40)", 
-                value: (
-                  <>
-                    Traditional rule requires winning two consecutive points (Advantage/Game).
-                    <SailorsEditionNote>
-                      To win from a deuce we use "Sudden Death." The next point wins the game — no long deuce battles!
-                    </SailorsEditionNote>
-                  </>
-                )
-              },
-              { label: "Sets", value: "A set is won by the first player to win six games with at least a two-game lead (e.g., 6–4). If tied at 5–5, it can be won 7–5." },
-              { label: "Tiebreak", value: "Triggered if a set reaches 6–6. Points are counted 1, 2, 3, etc. First player to seven points with a two-point lead wins the set." },
-              { 
-                label: "Match", 
-                value: (
-                  <>
-                    Matches are played as best-of-three sets (first player to win two sets wins).
-                    <SailorsEditionNote>
-                      The “Third Set Super Tie-breaker”: If the match goes to the third set tie-breaker, the first player who reaches the score of 10 wins the tie-breaker along with the match - no endless tie-breaker points!
-                    </SailorsEditionNote>
-                  </>
-                )
-              }
-            ]}
-          />
+          <div className="max-w-4xl ml-4">
+            <JourneyStage 
+              number={1} 
+              title="Stage 1: City Qualifiers League" 
+              subtitle="The Casual Start"
+              items={[
+                <span key="1a"><strong>Stage 1A (Casual League):</strong> A self-organized league where you match up with colleagues in your city. Win = 3 points; Loss = 1 participation point; Walkover = 3 points for winner.</span>,
+                <span key="1b"><strong>Stage 1B (Play-offs):</strong> The top 32 players (based on league points and skill ranking) advance to a play-off matched randomly by your country's local committee.</span>
+              ]} 
+            />
+            <JourneyStage 
+              number={2} 
+              title="Stage 2: City Finals" 
+              items={[
+                "The final 16 players in each city compete in a standard 4 rounds elimination tournament (R16, Quarter-finals, Semi-finals, Grand Finals) to crown the City Champion."
+              ]} 
+            />
+            <JourneyStage 
+              number={3} 
+              title="Stage 3: Country Finals" 
+              items={[
+                "Top players from cities across the nation compete in another 16-player elimination bracket for the Country Title."
+              ]} 
+            />
+            <JourneyStage 
+              number={4} 
+              title="Stage 4: Global Finals" 
+              subtitle="Singapore"
+              items={[
+                "The ultimate stage! Top players from across Asia, Brazil, and beyond meet in Singapore to compete for the Sailors World Championship."
+              ]} 
+            />
+          </div>
+        </div>
 
-          <RuleTable 
-            title="2. Serving Rules"
-            data={[
-              { label: "Starting Point", value: "Every point begins with a serve from behind the baseline." },
-              { label: "Direction", value: "The serve must be hit diagonally into the opponent’s opposite service box." },
-              { label: "Attempts", value: "A server gets two chances. Missing the first is a \"fault\"; missing the second is a \"double fault,\" and the receiver wins the point." },
-              { label: "Let", value: "If a serve hits the net cord but lands in the correct box, it is a \"let\" and is replayed without penalty." },
-              { label: "Foot Fault", value: "Stepping on or over the baseline before hitting the ball results in a fault." }
-            ]}
-          />
+        {/* 2. Scoring Systems */}
+        <div className="mb-32">
+          <div className="flex items-center gap-4 mb-12">
+            <div className="p-3 bg-[#4c8bf5] text-white rounded-2xl shadow-lg">
+              <Zap size={28} />
+            </div>
+            <h2 className="text-3xl lg:text-5xl font-black text-[#000080] uppercase">The "Sailors" Scoring Systems</h2>
+          </div>
+          
+          <p className="text-slate-500 font-bold mb-8 flex items-center gap-2">
+            <AlertCircle size={18} className="text-[#4c8bf5]" />
+            To keep games exciting and predictable, we use two modified scoring formats.
+          </p>
 
-          <RuleTable 
-            title="3. General Match Rules"
-            data={[
-              { label: "Alternating Service", value: "One player serves for an entire game, then the players switch roles for the next game." },
-              { label: "Changing Ends", value: "Players switch sides of the court after the first, third, and every subsequent odd-numbered game." },
-              { label: "In-Bounds", value: "Balls landing on the line are considered \"in\"." },
-              { label: "Ball in Play", value: "A point continues (the \"rally\") until the ball bounces twice, hits the net, or lands out of bounds." }
-            ]}
-          />
-        </section>
+          <ScoringTable />
 
-        <section className="mb-24">
-          <div className="p-10 lg:p-16 bg-white rounded-[3rem] border border-slate-200 text-[#000080] shadow-xl relative overflow-hidden group">
-            <div className="absolute top-0 right-0 w-64 h-64 bg-[#4c8bf5]/5 rounded-full -mr-32 -mt-32 blur-3xl group-hover:bg-[#4c8bf5]/10 transition-colors" />
-            
-            <h2 className="text-3xl lg:text-5xl font-black mb-10">
-              Sailor Sportsmanship
-            </h2>
-            
-            <p className="text-xl lg:text-2xl font-bold mb-12 text-[#4c8bf5]">
-              We don’t have VAR or Hawkeye on these courts, but we do have the Sailor Sportsmanship.
+          <div className="p-8 bg-blue-50/60 rounded-[2.5rem] border border-blue-100 text-[#000080] shadow-sm flex flex-col md:flex-row gap-8 items-center">
+            <div className="p-5 bg-white rounded-2xl flex-shrink-0 shadow-sm">
+               <Calendar size={32} className="text-[#4c8bf5]" />
+            </div>
+            <div className="space-y-4">
+              <p className="text-sm lg:text-base font-bold leading-relaxed">
+                <span className="text-[#4c8bf5] font-black uppercase tracking-wider mr-2">Note:</span> 
+                For the City Finals - Grand Final match, the Country Finals - Grand Final match and Global Finals - Grand Final match, <strong>Sailors Fast10 scoring (Best of 1 set)</strong> will be used.
+              </p>
+              <p className="text-sm lg:text-base font-bold leading-relaxed">
+                For all other matches, <strong>Sailors Fast6 scoring (Best of 1 set)</strong> will be used.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {/* 3. Traditional Rules Recap */}
+        <div className="mb-32">
+          <div className="flex items-center gap-4 mb-12">
+            <div className="p-3 bg-white border border-slate-200 text-[#000080] rounded-2xl shadow-md">
+              <BookOpen size={28} />
+            </div>
+            <h2 className="text-3xl lg:text-5xl font-black text-[#000080] uppercase whitespace-pre-line">Tennis Traditional Rules{"\n"}(A Recap for Beginners)</h2>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <RuleCard 
+              title="1. The Scoring System"
+              items={[
+                { label: "Points", desc: "Love = 0; 15 = 1 point; 30 = 2 points; 40 = 3 points; Game = The next point won after 40." },
+                { label: "Deuce", desc: "If the score reaches 40-40, it is called a Deuce." },
+                { label: "Winning", desc: "Sets: First to win 6 games with at least a 2-game lead. Matches: Usually best-of-three sets." }
+              ]}
+            />
+            <RuleCard 
+              title="2. Serving Rules"
+              items={[
+                { label: "The Start", desc: "Every point begins with a serve from behind the baseline." },
+                { label: "The Let", desc: "If the ball hits the net cord but lands in the correct service box, the serve is replayed." },
+                { label: "Foot Fault", desc: "Careful not to step on or over the baseline before you hit the ball." }
+              ]}
+            />
+            <RuleCard 
+              title="3. Match Rules"
+              items={[
+                { label: "Alternating", desc: "One player serves for an entire game, then roles switch for the next game." },
+                { label: "Ends", desc: "Switch sides of the court after the 1st, 3rd, and every subsequent odd-numbered game." },
+                { label: "Lines are IN", desc: "If the ball touches any part of the boundary line, it is considered IN." }
+              ]}
+            />
+          </div>
+        </div>
+
+        {/* 4. Sailor Code of Sportsmanship */}
+        <div className="relative group p-12 lg:p-20 bg-white rounded-[3rem] border border-slate-200 shadow-2xl overflow-hidden">
+          <div className="absolute top-0 right-0 w-96 h-96 bg-[#4c8bf5]/5 rounded-full -mr-48 -mt-48 blur-3xl group-hover:bg-[#4c8bf5]/10 transition-colors" />
+          
+          <div className="relative z-10 flex flex-col items-center text-center">
+            <Handshake size={64} className="text-[#4c8bf5] mb-8" />
+            <h2 className="text-3xl lg:text-6xl font-black text-[#000080] mb-6 uppercase">The Sailor Code of Sportsmanship</h2>
+            <p className="text-lg lg:text-xl text-slate-500 font-medium mb-16 max-w-2xl">
+              Since we don't have professional umpires or Hawkeye technology at every court, we rely on the <span className="text-[#4c8bf5] font-black italic">Sailor Spirit</span>.
             </p>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-12 w-full">
               {[
-                { id: 1, text: "You call the lines on your side of the net." },
-                { id: 2, text: "If a ball is 99% out but you aren't 100% sure, give the benefit of the doubt to your opponent. A fair game is a fun game." },
-                { id: 3, text: "The Final Handshake: Win or lose, every match ends with a \"Good Game\" and a genuine handshake." }
-              ].map(item => (
-                <div key={item.id} className="p-8 bg-slate-50 rounded-2xl border border-slate-100 hover:bg-white hover:border-[#4c8bf5]/20 hover:shadow-lg transition-all">
-                  <div className="text-3xl font-black text-[#4c8bf5] mb-4">0{item.id}</div>
-                  <p className="text-lg font-medium leading-relaxed text-slate-600">{item.text}</p>
+                { title: "You Call the Lines", desc: "You are responsible for calling lines on your side of the net." },
+                { title: "Benefit of the Doubt", desc: "If you aren't 100% sure a ball was out, it is considered IN. A fair game is a fun game." },
+                { title: "The Final Handshake", desc: "Win or lose, every match ends with a \"Good Game\" and a genuine handshake." }
+              ].map((item, i) => (
+                <div key={i} className="flex flex-col items-center">
+                  <div className="w-12 h-12 rounded-full bg-[#000080] text-white flex items-center justify-center font-black text-xl mb-6 shadow-lg">
+                    {i + 1}
+                  </div>
+                  <h4 className="text-xl font-black text-[#000080] mb-4 uppercase">{item.title}</h4>
+                  <p className="text-slate-500 font-medium text-sm leading-relaxed">{item.desc}</p>
                 </div>
               ))}
             </div>
           </div>
-        </section>
+        </div>
 
-        <section className="mb-24">
-          <h2 className="text-2xl lg:text-4xl font-black text-[#000080] mb-12 uppercase tracking-tight">
-            Sailor’s Open League Rules
-          </h2>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12">
-            {[
-              "Matches are self-umpired and should be conducted in the spirit of fair play.",
-              "The winner receives 3 points, the loser receives 1 participation point.",
-              "Players are responsible for booking their own courts and arranging the time & venue with their opponents.",
-              "Each player is only allowed to play against the same opponent once in the league.",
-              "Players are to submit their match results via the provided template after the match.",
-              "At the end of the tournament period, the Top 4 players / doubles pairings per category per city will participate in the semi-finals."
-            ].map((rule, i) => (
-              <div key={i} className="flex gap-4 p-6 bg-white rounded-2xl border border-slate-100 shadow-sm hover:shadow-md transition-shadow">
-                <div className="flex-shrink-0 w-6 h-6 rounded-full bg-[#4c8bf5]/10 flex items-center justify-center text-[#4c8bf5] font-black text-xs">
-                  {i + 1}
-                </div>
-                <p className="text-slate-600 font-bold text-sm leading-relaxed">{rule}</p>
-              </div>
-            ))}
-          </div>
-
-          <div className="p-6 bg-amber-50 rounded-2xl border border-amber-100 flex gap-4 items-start">
-            <AlertCircle className="text-amber-500 flex-shrink-0 mt-1" size={20} />
-            <p className="text-amber-900 text-sm font-medium leading-relaxed italic">
-              Players compete at their own risk, and it is the player's responsibility to ensure any courts used are safe for play. By entering you agree to all terms as outlined in the competition rules & regulations.
-            </p>
-          </div>
-        </section>
-
-        <section>
-          <h2 className="text-2xl lg:text-4xl font-black text-[#000080] mb-12 uppercase tracking-tight">
-            FAQs
-          </h2>
-
-          <RuleTable 
-            title="Match Completion"
-            data={[
-              { label: "Incomplete/Retirements", value: "The winner gets 3 points, and the loser gets 1 participation point" }
-            ]}
-          />
-
-          <RuleTable 
-            title="Walkovers & Withdrawals"
-            data={[
-              { label: "Scoring Rule", value: "The winner gets 3 points, and the loser gets 0 points" },
-              { label: "Claiming Rule", value: "Walkovers can only be claimed when the match is confirmed and cancelled within 24 hours of the start time." }
-            ]}
-          />
-        </section>
+        <div className="mt-20 text-center">
+          <p className="text-[#000080] font-black text-2xl lg:text-3xl uppercase tracking-tighter">
+            See you on the court!
+          </p>
+        </div>
       </motion.div>
     </section>
   );
