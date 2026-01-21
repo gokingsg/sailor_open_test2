@@ -124,7 +124,7 @@ export const RulesSection = () => {
               subtitle="The Casual Start"
               items={[
                 <span key="1a"><strong>Stage 1A (Casual League):</strong> A self-organized league where you match up with colleagues in your city. Win = 3 points; Loss = 1 participation point; Walkover = 3 points for winner.</span>,
-                <span key="1b"><strong>Stage 1B (Play-offs):</strong> The top 32 players (based on league points and skill ranking) advance to a play-off matched randomly by your country's local committee.</span>
+                <span key="1b"><strong>Stage 1B (Play-offs):</strong> The top 32 players (based on league points and skill ranking) advance to a play-off matched randomly by your market's local committee.</span>
               ]} 
             />
             <JourneyStage 
@@ -136,9 +136,9 @@ export const RulesSection = () => {
             />
             <JourneyStage 
               number={3} 
-              title="Stage 3: Country Finals" 
+              title="Stage 3: Market Finals" 
               items={[
-                "Top players from cities across the nation compete in another 16-player elimination bracket for the Country Title."
+                "Top players from cities across the nation compete in another 16-player elimination bracket for the Market Champion."
               ]} 
             />
             <JourneyStage 
@@ -175,7 +175,7 @@ export const RulesSection = () => {
             <div className="space-y-4">
               <p className="text-sm lg:text-base font-bold leading-relaxed">
                 <span className="text-[#4c8bf5] font-black uppercase tracking-wider mr-2">Note:</span> 
-                For the City Finals - Grand Final match, the Country Finals - Grand Final match and Global Finals - Grand Final match, <strong>Sailors Fast10 scoring (Best of 1 set)</strong> will be used.
+                For the City Finals - Grand Final match, the Market Finals - Grand Final match and Global Finals - Grand Final match, <strong>Sailors Fast10 scoring (Best of 1 set)</strong> will be used.
               </p>
               <p className="text-sm lg:text-base font-bold leading-relaxed">
                 For all other matches, <strong>Sailors Fast6 scoring (Best of 1 set)</strong> will be used.

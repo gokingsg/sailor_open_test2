@@ -10,7 +10,7 @@ export const RegistrationFlow = () => {
   const [answers, setAnswers] = useState<Record<number, string | string[]>>({});
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   
-  const [selectedCountry, setSelectedCountry] = useState('Singapore');
+  const [selectedMarket, setSelectedMarket] = useState('Singapore');
   const [selectedCity, setSelectedCity] = useState('Singapore');
   const [otherCity, setOtherCity] = useState('');
   
@@ -20,10 +20,10 @@ export const RegistrationFlow = () => {
   const currentQuestion = QUESTIONS[currentQuestionIdx];
   const matchmakerProgress = ((currentQuestionIdx + 1) / QUESTIONS.length) * 100;
 
-  const handleCountryChange = (country: string) => {
-    setSelectedCountry(country);
-    if (LOCATIONS[country]) {
-      setSelectedCity(LOCATIONS[country][0]);
+  const handleMarketChange = (market: string) => {
+    setSelectedMarket(market);
+    if (LOCATIONS[market]) {
+      setSelectedCity(LOCATIONS[market][0]);
     } else {
       setSelectedCity('');
     }
@@ -55,7 +55,7 @@ export const RegistrationFlow = () => {
       alert("Please select a category to proceed.");
       return;
     }
-    if (!selectedCountry || !selectedCity) {
+    if (!selectedMarket || !selectedCity) {
       alert("Please select both market and office location.");
       return;
     }
@@ -123,13 +123,13 @@ export const RegistrationFlow = () => {
                       <div className="relative">
                         <select 
                           required 
-                          value={selectedCountry}
-                          onChange={(e) => handleCountryChange(e.target.value)}
+                          value={selectedMarket}
+                          onChange={(e) => handleMarketChange(e.target.value)}
                           className="w-full px-6 py-4 bg-slate-50 border border-slate-100 rounded-xl appearance-none focus:ring-2 focus:ring-[#4c8bf5] outline-none font-medium"
                         >
                           <option value="">Select Market</option>
-                          {Object.keys(LOCATIONS).sort().map(country => (
-                            <option key={country} value={country}>{country}</option>
+                          {Object.keys(LOCATIONS).sort().map(market => (
+                            <option key={market} value={market}>{market}</option>
                           ))}
                         </select>
                         <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" size={18} />
@@ -140,7 +140,7 @@ export const RegistrationFlow = () => {
                       <div className="relative">
                         <select 
                           required 
-                          disabled={!selectedCountry}
+                          disabled={!selectedMarket}
                           value={selectedCity}
                           onChange={(e) => {
                             setSelectedCity(e.target.value);
@@ -149,7 +149,7 @@ export const RegistrationFlow = () => {
                           className="w-full px-6 py-4 bg-slate-50 border border-slate-100 rounded-xl appearance-none focus:ring-2 focus:ring-[#4c8bf5] outline-none disabled:opacity-50 font-medium"
                         >
                           <option value="">Select Office</option>
-                          {selectedCountry && LOCATIONS[selectedCountry].map(city => (
+                          {selectedMarket && LOCATIONS[selectedMarket].map(city => (
                             <option key={city} value={city}>{city}</option>
                           ))}
                         </select>
@@ -311,7 +311,7 @@ export const RegistrationFlow = () => {
                   setCurrentQuestionIdx(0); 
                   setAnswers({}); 
                   setSelectedCategories([]); 
-                  setSelectedCountry('Singapore'); 
+                  setSelectedMarket('Singapore'); 
                   setSelectedCity('Singapore');
                   setOtherCity('');
                   setRatingProgram('');
