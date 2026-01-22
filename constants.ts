@@ -94,11 +94,18 @@ export const LEADERBOARD_DATA: LeaderboardEntry[] = [
   { rank: 5, name: "Player E", played: 4, won: 0, lost: 4, setsW: 0, setsL: 8, gamesW: 22, gamesL: 48, gamesPct: "31.43%", points: 4 },
 ];
 
-export const PRIZES_DATA: PrizeEntry[] = [
-  { position: "1st", mensSingles: "$100", mensDoubles: "$100", womensSingles: "$100", womensDoubles: "$100" },
-  { position: "2nd", mensSingles: "$80", mensDoubles: "$80", womensSingles: "$80", womensDoubles: "$80" },
-  { position: "3rd", mensSingles: "$50", mensDoubles: "$50", womensSingles: "$50", womensDoubles: "$50" },
-  { position: "4th", mensSingles: "$50", mensDoubles: "$50", womensSingles: "$50", womensDoubles: "$50" },
+export const GLOBAL_PRIZES: PrizeEntry[] = [
+  { position: "1st", mensSingles: "10,000", womensSingles: "10,000" },
+  { position: "2nd", mensSingles: "8,000", womensSingles: "8,000" },
+  { position: "3rd & 4th", mensSingles: "5,000", womensSingles: "5,000" },
+  { position: "5th - 8th", mensSingles: "3,000", womensSingles: "3,000" },
+];
+
+export const MARKET_PRIZES: PrizeEntry[] = [
+  { position: "1st", mensSingles: "2,000", womensSingles: "2,000" },
+  { position: "2nd", mensSingles: "1,600", womensSingles: "1,600" },
+  { position: "3rd", mensSingles: "1,000", womensSingles: "1,000" },
+  { position: "4th", mensSingles: "1,000", womensSingles: "1,000" },
 ];
 
 export const CONTACT_DATA: ContactEntry[] = [

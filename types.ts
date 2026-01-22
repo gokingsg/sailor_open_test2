@@ -54,9 +54,7 @@ export interface LeaderboardEntry {
 export interface PrizeEntry {
   position: string;
   mensSingles: string;
-  mensDoubles: string;
   womensSingles: string;
-  womensDoubles: string;
 }
 
 export interface ContactEntry {

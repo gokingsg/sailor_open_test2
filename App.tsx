@@ -5,7 +5,6 @@ import { MobileNav } from './components/MobileNav';
 import { TopHeader } from './components/TopHeader';
 import { AboutSection } from './components/AboutSection';
 import { RulesSection } from './components/RulesSection';
-import { LeaderboardSection } from './components/LeaderboardSection';
 import { PrizesSection } from './components/PrizesSection';
 import { RegistrationFlow } from './components/RegistrationFlow';
 import { ContactSection } from './components/ContactSection';
@@ -22,7 +21,7 @@ export default function App() {
         <div className="flex-1 flex flex-col">
           <AboutSection />
           <RulesSection />
-          <LeaderboardSection />
+          {/* LeaderboardSection hidden as requested */}
           <PrizesSection />
           <RegistrationFlow />
           <ContactSection />

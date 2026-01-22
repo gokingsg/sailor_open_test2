@@ -1,7 +1,7 @@
 
 import React, { useState } from 'react';
 import { motion, AnimatePresence, useScroll, useTransform } from 'framer-motion';
-import { Menu, X, Info, BookOpen, BarChart3, Gift, UserPlus, MessageSquare } from 'lucide-react';
+import { Menu, X, Info, BookOpen, Gift, UserPlus, MessageSquare } from 'lucide-react';
 import { ASSETS } from '../constants';
 
 export const MobileNav = () => {
@@ -55,9 +55,7 @@ export const MobileNav = () => {
             <button onClick={() => scrollTo('rules-section')} className="text-2xl font-bold flex items-center gap-4">
               <BookOpen className="text-[#4c8bf5]" /> How We Play
             </button>
-            <button onClick={() => scrollTo('leaderboard-section')} className="text-2xl font-bold flex items-center gap-4">
-              <BarChart3 className="text-[#4c8bf5]" /> Leaderboard
-            </button>
+            {/* Leaderboard button hidden */}
             <button onClick={() => scrollTo('prizes-section')} className="text-2xl font-bold flex items-center gap-4">
               <Gift className="text-[#4c8bf5]" /> Prizes
             </button>

@@ -22,8 +22,8 @@ export const AboutSection = () => {
     {
       overline: "INCLUSIVITY",
       title: "Why Join?",
-      subtitle: "Zero-Skill-Friendly",
-      content: "Whether you have a lightning-fast serve or you’ve never held a tennis racket, there is a place for you on our court. This is a Zero-Skill-Friendly tournament! Our goal isn't to find the next Grand Slam champion; it’s to foster the joy of movement and the power of connection.",
+      subtitle: "From Local Courts to Global Glory",
+      content: "The Sailors Open is a celebration of tennis at every level. We are calling on our elite athletes to showcase their talent in this high-stakes battle for attractive prizes and the honour of being named the Inaugural Sailors Open Global Champion. We welcome you to come join us whether you are playing for the championship point or just for the breather from work.",
       icon: null,
     },
     {
@@ -34,7 +34,7 @@ export const AboutSection = () => {
       values: [
         { label: "We Serve (Aces)", desc: "This tournament is our way of serving the well-being of our greatest asset—you. By taking time away from serving our users to serving up “Aces” on the court, we hope that our Sailors can come back feeling refreshed and ready to make a difference at work.", icon: "🎾" },
         { label: "We Run (for Every Ball)", desc: "We are known for our speed of execution and sense of urgency. At the Sailors Open, “We Run” for every drop shot and chase every ball with that same relentless energy. It’s about moving our bodies and pushing our limits, all while having a blast.", icon: "🏃" },
-        { label: "We Adapt (to Match Conditions)", desc: "The weather might shift, and the ballspin might be tricky, but Sailors find a way. Whether you’re learning a new stroke or playing doubles with a new teammate, We Adapt to the game conditions, embracing every new challenge with a smile.", icon: "🔄" },
+        { label: "We Adapt (to Match Conditions)", desc: "The weather might shift, and the ballspin might be tricky, but Sailors find a way. Whether you’re learning a new stroke or playing with a new teammate, We Adapt to the game conditions, embracing every new challenge with a smile.", icon: "🔄" },
         { label: "We Commit (to the Final Match Point)", desc: "We play with integrity, honoring the rules and our opponents. When the scoreline is tight, we dig deep and finish what we started.", icon: "🤝" },
         { label: "We Stay Humble (Win or Lose)", desc: "Whether you win the match point or miss the ball entirely, We Stay Humble in victory and gracious in defeat. Everyone has something to learn from the experience. We celebrate the great shots, laugh off the misses, and always end with a high-five.", icon: "🌱" }
       ]

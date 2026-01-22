@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Info, BookOpen, BarChart3, Gift, UserPlus, MessageSquare } from 'lucide-react';
+import { Info, BookOpen, Gift, UserPlus, MessageSquare } from 'lucide-react';
 import { ASSETS } from '../constants';
 
 export const Sidebar = () => {
@@ -46,15 +46,7 @@ export const Sidebar = () => {
           </span>
           How We Play
         </button>
-        <button 
-          onClick={() => scrollTo('leaderboard-section')}
-          className="group flex items-center gap-3 text-xl font-bold transition-all text-left hover:translate-x-2"
-        >
-          <span className="w-8 h-8 rounded-lg bg-[#4c8bf5]/20 flex items-center justify-center group-hover:bg-[#4c8bf5]/40 transition-colors">
-            <BarChart3 size={18} className="text-[#4c8bf5]" />
-          </span>
-          Leaderboard
-        </button>
+        {/* Leaderboard button hidden */}
         <button 
           onClick={() => scrollTo('prizes-section')}
           className="group flex items-center gap-3 text-xl font-bold transition-all text-left hover:translate-x-2"
