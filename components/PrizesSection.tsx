@@ -75,7 +75,7 @@ export const PrizesSection = () => {
           </div>
           <div className="flex items-center gap-2 text-[#4c8bf5] font-bold text-sm">
             <Sparkles size={14} />
-            <span>Stay tuned for the announcement of attractive fun prizes i.e. Best Dressed Award.</span>
+            <span>Stay tuned for the announcement of attractive fun prizes.</span>
           </div>
         </div>
       </motion.div>
