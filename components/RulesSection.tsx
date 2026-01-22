@@ -40,9 +40,9 @@ const ScoringTable = () => (
       <thead>
         <tr className="bg-[#000080] text-white">
           <th className="px-8 py-6 font-black uppercase tracking-widest text-xs border-r border-white/10">Feature</th>
-          <th className="px-8 py-6 font-black uppercase tracking-widest text-xs border-r border-white/10 bg-[#000080]/90">Traditional Tennis</th>
           <th className="px-8 py-6 font-black uppercase tracking-widest text-xs border-r border-white/10 bg-[#4c8bf5]">Sailors Fast6 Tennis</th>
-          <th className="px-8 py-6 font-black uppercase tracking-widest text-xs bg-[#4c8bf5]/80">Sailors Fast10 Tennis</th>
+          <th className="px-8 py-6 font-black uppercase tracking-widest text-xs border-r border-white/10 bg-[#4c8bf5]/80">Sailors Fast10 Tennis</th>
+          <th className="px-8 py-6 font-black uppercase tracking-widest text-xs bg-[#000080]/90">Traditional Tennis</th>
         </tr>
       </thead>
       <tbody className="divide-y divide-slate-100">
@@ -55,9 +55,9 @@ const ScoringTable = () => (
         ].map((row, idx) => (
           <tr key={idx} className="group hover:bg-slate-50/50 transition-colors">
             <td className="px-8 py-5 font-black text-[#000080] text-xs uppercase tracking-wider border-r border-slate-100 bg-slate-50/30">{row.feature}</td>
-            <td className="px-8 py-5 text-slate-500 font-medium text-sm border-r border-slate-100">{row.traditional}</td>
             <td className="px-8 py-5 text-[#000080] font-bold text-sm border-r border-slate-100 bg-[#4c8bf5]/5">{row.fast6}</td>
-            <td className="px-8 py-5 text-[#000080] font-bold text-sm bg-[#4c8bf5]/10">{row.fast10}</td>
+            <td className="px-8 py-5 text-[#000080] font-bold text-sm border-r border-slate-100 bg-[#4c8bf5]/10">{row.fast10}</td>
+            <td className="px-8 py-5 text-slate-500 font-medium text-sm">{row.traditional}</td>
           </tr>
         ))}
       </tbody>
