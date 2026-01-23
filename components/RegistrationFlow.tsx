@@ -204,7 +204,7 @@ export const RegistrationFlow = () => {
 
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-4">
                     <div>
-                      <label className="block text-sm font-bold text-[#000080] mb-2">Rating Program (Optional)</label>
+                      <label className="block text-sm font-bold text-[#000080] mb-2">Official Skill Certification (Optional)</label>
                       <div className="relative">
                         <select 
                           value={ratingProgram}
