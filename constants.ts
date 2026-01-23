@@ -20,7 +20,7 @@ export const LOCATIONS: Record<string, string[]> = {
   "Malaysia": ["Kuala Lumpur", "Penang", "Perak", "Others"],
   "Mexico": ["Mexico City", "Others"],
   "Philippines": ["Mandaluyong", "Laguna", "Bulacan", "Others"],
-  "Singapore": ["Singapore", "Others"],
+  "Singapore": ["Singapore"],
   "Taiwan": ["Taipei", "Taichung", "Others"],
   "Thailand": ["Bangkok", "Others"],
   "Vietnam": ["Hanoi", "Ho Chi Minh City", "Others"]

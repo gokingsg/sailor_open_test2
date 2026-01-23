@@ -2,7 +2,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Info, Sparkles, Globe2, MapPin } from 'lucide-react';
-import { GLOBAL_PRIZES, MARKET_PRIZES } from '../constants';
+import { GLOBAL_PRIZES } from '../constants';
 import { PrizeEntry } from '../types';
 
 const PrizeTable = ({ data, title, icon: Icon, headerColor = "bg-[#d3e3f6]" }: { data: PrizeEntry[], title: string, icon: any, headerColor?: string }) => (
@@ -60,12 +60,7 @@ export const PrizesSection = () => {
             icon={Globe2}
             headerColor="bg-[#d3e3f6]"
           />
-          <PrizeTable 
-            title="Market Finals" 
-            data={MARKET_PRIZES} 
-            icon={MapPin}
-            headerColor="bg-[#e0e7ff]"
-          />
+          {/* Market Finals removed */}
         </div>
         
         <div className="mt-8 space-y-3">
