@@ -14,20 +14,22 @@ export const AboutSection = () => {
 
   const sections = [
     {
-      overline: "Opening",
+      overline: "Introduction",
+      navLabel: "INTRODUCTION",
       title: "ABOUT SAILORS OPEN",
       content: "Welcome to the official homepage of the Sailors Open 2026—the inaugural tennis tournament where we trade our keyboards for rackets and our screens for the baseline!\n\nAt Sea, we believe that even the most dedicated crews should find time to drop anchor, recharge, and enjoy the breeze. The Sailors Open is more than just a tournament; it’s a vibrant celebration of our community and a chance to smash some aces with colleagues you’ve only ever met on a video call.",
       icon: null,
     },
     {
-      overline: "INCLUSIVITY",
+      navLabel: "WHY JOIN",
       title: "Why Join?",
       subtitle: "From Local Courts to Global Glory",
-      content: "The Sailors Open is a celebration of tennis at every level. We are calling on our elite athletes to showcase their talent in this high-stakes battle for attractive prizes and the honour of being named the Inaugural Sailors Open Global Champion. We welcome you to come join us whether you are playing for the championship point or just for the breather from work.",
+      content: "The Sailors Open is a celebration of tennis at every level. We are calling on all aspiring athletes to showcase their talent in this high-stakes battle for attractive prizes and the honour of being named the Inaugural Sailors Open Global Champion. We welcome you to come join us whether you are playing for the championship point or just for the breather from work.",
       icon: null,
     },
     {
       overline: "OUR CORE VALUES",
+      navLabel: "VALUES",
       title: "Living Our Values",
       subtitle: "One Rally at a Time",
       content: "We’re bringing the Sea spirit to the playing courts. Here’s how our core values are guiding the tournament:",
@@ -41,6 +43,7 @@ export const AboutSection = () => {
     },
     {
       overline: "EXPERIENCE",
+      navLabel: "EXPERIENCE",
       title: "What to Expect",
       items: [
         { title: "Create Happy Moments", desc: "Music, refreshments, and enjoyment are the priority.", icon: <Smile size={24} className="text-[#4c8bf5]" /> },
@@ -50,6 +53,7 @@ export const AboutSection = () => {
     },
     {
       id: "ready-to-sail",
+      navLabel: "JOIN",
       title: "Ready to Set Sail?",
       content: "The court is calling, and the energy is building. Don't worry about the scoreboard—just bring your energy, your team spirit, and your desire to have fun!",
       cta: true,
@@ -220,7 +224,7 @@ export const AboutSection = () => {
                 {...({ layoutId: "active-label" } as any)}
                 className="absolute right-full mr-4 top-1/2 -translate-y-1/2 text-[10px] font-black text-[#4c8bf5] uppercase tracking-[0.2em] whitespace-nowrap"
               >
-                {section.overline || "START"}
+                {section.navLabel || section.overline || "START"}
               </motion.span>
             )}
            </button>

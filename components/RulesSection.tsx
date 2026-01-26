@@ -100,7 +100,7 @@ export const RulesSection = () => {
           <div className="max-w-4xl p-8 lg:p-10 bg-white rounded-[2.5rem] border border-slate-200 shadow-xl shadow-slate-200/40 relative overflow-hidden group">
             <div className="absolute top-0 right-0 w-32 h-32 bg-[#4c8bf5]/5 rounded-full -mr-16 -mt-16 blur-2xl group-hover:bg-[#4c8bf5]/10 transition-colors" />
             <p className="text-lg lg:text-xl text-slate-600 leading-relaxed font-medium">
-              Welcome to the Road to Finals! This competition is designed to be fun, fast-paced, and
+              This competition is designed to be fun, fast-paced, and
               inclusive for all employees. Whether you are a seasoned player or a beginner, this guide will
               help you navigate through everything you need to know, from the basic rules and your first local
               match, all the way to the Global Championship Finals.
@@ -138,7 +138,7 @@ export const RulesSection = () => {
               number={3} 
               title="Stage 3: Market Finals" 
               items={[
-                "Top players from cities across the nation compete in another 16-player elimination bracket for the Market Champion."
+                "Top players from cities across the market compete in another 16-player elimination bracket for the Market Champion."
               ]} 
             />
             <JourneyStage 
@@ -175,7 +175,7 @@ export const RulesSection = () => {
             <div className="space-y-4">
               <p className="text-sm lg:text-base font-bold leading-relaxed">
                 <span className="text-[#4c8bf5] font-black uppercase tracking-wider mr-2">Note:</span> 
-                For the City Finals - Grand Final match, the Market Finals - Grand Final match and Global Finals - Grand Final match, <strong>Sailors Fast10 scoring (Best of 1 set)</strong> will be used.
+                Sailors Fast10 scoring (Best of 1 set) will be used for all the grand final match at city, market and global level,
               </p>
               <p className="text-sm lg:text-base font-bold leading-relaxed">
                 For all other matches, <strong>Sailors Fast6 scoring (Best of 1 set)</strong> will be used.

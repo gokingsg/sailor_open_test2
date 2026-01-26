@@ -19,7 +19,7 @@ export const ContactSection = () => {
           <h1 className="text-3xl lg:text-5xl font-black text-[#000080] leading-tight text-left">
             Have more queries about Sailors Open?
           </h1>
-          <p className="text-xl font-black text-[#000080]">Please check out the Rules / FAQ page.</p>
+          <p className="text-xl font-black text-[#000080]">Please check out the FAQ page.</p>
           <p className="text-lg font-bold text-slate-600">You may contact the following for Sailors Open related enquiries:</p>
         </div>
 
