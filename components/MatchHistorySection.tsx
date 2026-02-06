@@ -4,8 +4,11 @@ import { Calendar, CheckCircle, MapPin, Clock } from 'lucide-react';
 import { MATCH_HISTORY_DATA } from '../constants';
 import { MatchRecord } from '../types';
 
-// Fixed: Explicitly typed prop to avoid TS error with key prop
-const MatchCard = ({ match }: { match: MatchRecord }) => {
+interface MatchCardProps {
+  match: MatchRecord;
+}
+
+const MatchCard: React.FC<MatchCardProps> = ({ match }) => {
   return (
     <div className="bg-white rounded-3xl overflow-hidden border border-slate-100 shadow-sm hover:shadow-md transition-all">
       {/* Card Header */}

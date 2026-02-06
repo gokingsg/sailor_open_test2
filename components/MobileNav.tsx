@@ -1,12 +1,12 @@
 
 import React, { useState } from 'react';
 import { motion, AnimatePresence, useScroll, useTransform } from 'framer-motion';
-import { Menu, X, Info, BookOpen, Gift, UserPlus, MessageSquare, ClipboardList, Home } from 'lucide-react';
+import { Menu, X, Info, BookOpen, Gift, UserPlus, MessageSquare, ClipboardList, Trophy } from 'lucide-react';
 import { ASSETS } from '../constants';
 
 interface MobileNavProps {
-  activeView: 'home' | 'history';
-  onNavigate: (view: 'home' | 'history') => void;
+  activeView: 'home' | 'history' | 'leaderboard';
+  onNavigate: (view: 'home' | 'history' | 'leaderboard') => void;
 }
 
 export const MobileNav = ({ activeView, onNavigate }: MobileNavProps) => {
@@ -30,7 +30,7 @@ export const MobileNav = ({ activeView, onNavigate }: MobileNavProps) => {
     }
   };
 
-  const handleNavClick = (view: 'home' | 'history') => {
+  const handleNavClick = (view: 'home' | 'history' | 'leaderboard') => {
     setIsOpen(false);
     onNavigate(view);
   };
@@ -67,19 +67,12 @@ export const MobileNav = ({ activeView, onNavigate }: MobileNavProps) => {
             } as any)}
             className="bg-[#000080] p-8 text-white flex flex-col gap-8 shadow-2xl absolute top-full left-0 w-full z-[105]"
           >
-            {activeView === 'history' && (
-              <button onClick={() => handleNavClick('home')} className="text-2xl font-bold flex items-center gap-4">
-                <Home className="text-[#4c8bf5]" /> Home
-              </button>
-            )}
-
             <button onClick={() => scrollTo('about-section')} className="text-2xl font-bold flex items-center gap-4">
               <Info className="text-[#4c8bf5]" /> About
             </button>
             <button onClick={() => scrollTo('rules-section')} className="text-2xl font-bold flex items-center gap-4">
               <BookOpen className="text-[#4c8bf5]" /> How We Play
             </button>
-            {/* Leaderboard button hidden */}
             <button onClick={() => scrollTo('prizes-section')} className="text-2xl font-bold flex items-center gap-4">
               <Gift className="text-[#4c8bf5]" /> Prizes
             </button>
@@ -94,6 +87,10 @@ export const MobileNav = ({ activeView, onNavigate }: MobileNavProps) => {
 
             <button onClick={() => handleNavClick('history')} className={`text-2xl font-bold flex items-center gap-4 ${activeView === 'history' ? 'text-[#4c8bf5]' : ''}`}>
               <ClipboardList className="text-[#4c8bf5]" /> Personal Records
+            </button>
+
+            <button onClick={() => handleNavClick('leaderboard')} className={`text-2xl font-bold flex items-center gap-4 ${activeView === 'leaderboard' ? 'text-[#4c8bf5]' : ''}`}>
+              <Trophy className="text-[#4c8bf5]" /> Leaderboard
             </button>
           </motion.div>
         )}

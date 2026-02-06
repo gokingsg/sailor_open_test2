@@ -3,7 +3,7 @@ import React from 'react';
 import { UserProfile } from './UserProfile';
 
 interface TopHeaderProps {
-  onNavigate: (view: 'home' | 'history') => void;
+  onNavigate: (view: 'home' | 'history' | 'leaderboard') => void;
 }
 
 export const TopHeader = ({ onNavigate }: TopHeaderProps) => {

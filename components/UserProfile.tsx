@@ -1,10 +1,10 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { LogOut, ClipboardList } from 'lucide-react';
+import { LogOut, ClipboardList, Trophy } from 'lucide-react';
 
 interface UserProfileProps {
-  onNavigate: (view: 'home' | 'history') => void;
+  onNavigate: (view: 'home' | 'history' | 'leaderboard') => void;
 }
 
 export const UserProfile = ({ onNavigate }: UserProfileProps) => {
@@ -21,9 +21,9 @@ export const UserProfile = ({ onNavigate }: UserProfileProps) => {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  const handleHistoryClick = () => {
+  const handleNavClick = (view: 'history' | 'leaderboard') => {
     setIsOpen(false);
-    onNavigate('history');
+    onNavigate(view);
   };
 
   return (
@@ -64,11 +64,19 @@ export const UserProfile = ({ onNavigate }: UserProfileProps) => {
             
             <div className="p-2 space-y-1">
               <button 
-                onClick={handleHistoryClick}
+                onClick={() => handleNavClick('history')}
                 className="w-full flex items-center gap-3 px-4 py-3 hover:bg-slate-50 text-[#000080] rounded-xl transition-colors font-bold text-sm"
               >
                 <ClipboardList size={18} className="text-[#4c8bf5]" />
                 Match History
+              </button>
+              
+              <button 
+                onClick={() => handleNavClick('leaderboard')}
+                className="w-full flex items-center gap-3 px-4 py-3 hover:bg-slate-50 text-[#000080] rounded-xl transition-colors font-bold text-sm"
+              >
+                <Trophy size={18} className="text-[#4c8bf5]" />
+                Leaderboard
               </button>
 
               <button 

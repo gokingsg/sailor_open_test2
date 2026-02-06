@@ -9,12 +9,13 @@ import { PrizesSection } from './components/PrizesSection';
 import { RegistrationFlow } from './components/RegistrationFlow';
 import { ContactSection } from './components/ContactSection';
 import { MatchHistorySection } from './components/MatchHistorySection';
+import { LeaderboardSection } from './components/LeaderboardSection';
 import { Footer } from './components/Footer';
 
 export default function App() {
-  const [activeView, setActiveView] = useState<'home' | 'history'>('home');
+  const [activeView, setActiveView] = useState<'home' | 'history' | 'leaderboard'>('home');
 
-  const handleNavigate = (view: 'home' | 'history') => {
+  const handleNavigate = (view: 'home' | 'history' | 'leaderboard') => {
     setActiveView(view);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
@@ -31,15 +32,19 @@ export default function App() {
           <div className="flex-1 flex flex-col">
             <AboutSection />
             <RulesSection />
-            {/* LeaderboardSection hidden as requested */}
             <PrizesSection />
             <RegistrationFlow />
             <ContactSection />
             <Footer />
           </div>
-        ) : (
+        ) : activeView === 'history' ? (
           <div className="flex-1 flex flex-col">
             <MatchHistorySection />
+            <Footer />
+          </div>
+        ) : (
+          <div className="flex-1 flex flex-col">
+            <LeaderboardSection />
             <Footer />
           </div>
         )}

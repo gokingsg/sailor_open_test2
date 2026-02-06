@@ -1,11 +1,11 @@
 
 import React from 'react';
-import { Info, BookOpen, Gift, UserPlus, MessageSquare, ClipboardList, Home } from 'lucide-react';
+import { Info, BookOpen, Gift, UserPlus, MessageSquare, ClipboardList, Trophy } from 'lucide-react';
 import { ASSETS } from '../constants';
 
 interface SidebarProps {
-  activeView: 'home' | 'history';
-  onNavigate: (view: 'home' | 'history') => void;
+  activeView: 'home' | 'history' | 'leaderboard';
+  onNavigate: (view: 'home' | 'history' | 'leaderboard') => void;
 }
 
 export const Sidebar = ({ activeView, onNavigate }: SidebarProps) => {
@@ -42,18 +42,6 @@ export const Sidebar = ({ activeView, onNavigate }: SidebarProps) => {
       </div>
 
       <nav className="relative z-10 flex flex-col gap-8">
-        {activeView === 'history' && (
-          <button 
-            onClick={() => onNavigate('home')}
-            className="group flex items-center gap-3 text-xl font-bold transition-all text-left hover:translate-x-2"
-          >
-            <span className="w-8 h-8 rounded-lg bg-[#4c8bf5]/20 flex items-center justify-center group-hover:bg-[#4c8bf5]/40 transition-colors">
-              <Home size={18} className="text-[#4c8bf5]" />
-            </span>
-            Back to Home
-          </button>
-        )}
-
         <button 
           onClick={() => scrollTo('about-section')}
           className="group flex items-center gap-3 text-xl font-bold transition-all text-left hover:translate-x-2"
@@ -72,7 +60,6 @@ export const Sidebar = ({ activeView, onNavigate }: SidebarProps) => {
           </span>
           How We Play
         </button>
-        {/* Leaderboard button hidden */}
         <button 
           onClick={() => scrollTo('prizes-section')}
           className="group flex items-center gap-3 text-xl font-bold transition-all text-left hover:translate-x-2"
@@ -111,6 +98,16 @@ export const Sidebar = ({ activeView, onNavigate }: SidebarProps) => {
             <ClipboardList size={18} />
           </span>
           Personal Records
+        </button>
+
+        <button 
+          onClick={() => onNavigate('leaderboard')}
+          className={`group flex items-center gap-3 text-xl font-bold transition-all text-left hover:translate-x-2 ${activeView === 'leaderboard' ? 'text-[#4c8bf5]' : 'text-white'}`}
+        >
+          <span className={`w-8 h-8 rounded-lg flex items-center justify-center transition-colors ${activeView === 'leaderboard' ? 'bg-[#4c8bf5] text-white' : 'bg-[#4c8bf5]/20 text-[#4c8bf5] group-hover:bg-[#4c8bf5]/40'}`}>
+            <Trophy size={18} />
+          </span>
+          Leaderboard
         </button>
       </nav>
     </div>
