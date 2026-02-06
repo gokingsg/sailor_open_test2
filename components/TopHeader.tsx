@@ -1,9 +1,8 @@
-
 import React from 'react';
 import { UserProfile } from './UserProfile';
 
 interface TopHeaderProps {
-  onNavigate: (view: 'home' | 'history' | 'leaderboard') => void;
+  onNavigate: (view: 'home' | 'history' | 'leaderboard' | 'registration' | 'test') => void;
 }
 
 export const TopHeader = ({ onNavigate }: TopHeaderProps) => {

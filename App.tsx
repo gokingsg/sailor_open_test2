@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Sidebar } from './components/Sidebar';
 import { MobileNav } from './components/MobileNav';
@@ -10,12 +9,14 @@ import { RegistrationFlow } from './components/RegistrationFlow';
 import { ContactSection } from './components/ContactSection';
 import { MatchHistorySection } from './components/MatchHistorySection';
 import { LeaderboardSection } from './components/LeaderboardSection';
+import { ScoreRegistrationSection } from './components/ScoreRegistrationSection';
+import { TestEmptyStateSection } from './components/TestEmptyStateSection';
 import { Footer } from './components/Footer';
 
 export default function App() {
-  const [activeView, setActiveView] = useState<'home' | 'history' | 'leaderboard'>('home');
+  const [activeView, setActiveView] = useState<'home' | 'history' | 'leaderboard' | 'registration' | 'test'>('home');
 
-  const handleNavigate = (view: 'home' | 'history' | 'leaderboard') => {
+  const handleNavigate = (view: 'home' | 'history' | 'leaderboard' | 'registration' | 'test') => {
     setActiveView(view);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
@@ -42,9 +43,19 @@ export default function App() {
             <MatchHistorySection />
             <Footer />
           </div>
-        ) : (
+        ) : activeView === 'leaderboard' ? (
           <div className="flex-1 flex flex-col">
             <LeaderboardSection />
+            <Footer />
+          </div>
+        ) : activeView === 'registration' ? (
+           <div className="flex-1 flex flex-col">
+            <ScoreRegistrationSection />
+            <Footer />
+          </div>
+        ) : (
+          <div className="flex-1 flex flex-col">
+            <TestEmptyStateSection />
             <Footer />
           </div>
         )}

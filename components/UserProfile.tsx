@@ -1,10 +1,9 @@
-
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { LogOut, ClipboardList, Trophy } from 'lucide-react';
+import { LogOut, ClipboardList, Trophy, FileText, FlaskConical } from 'lucide-react';
 
 interface UserProfileProps {
-  onNavigate: (view: 'home' | 'history' | 'leaderboard') => void;
+  onNavigate: (view: 'home' | 'history' | 'leaderboard' | 'registration' | 'test') => void;
 }
 
 export const UserProfile = ({ onNavigate }: UserProfileProps) => {
@@ -21,7 +20,7 @@ export const UserProfile = ({ onNavigate }: UserProfileProps) => {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  const handleNavClick = (view: 'history' | 'leaderboard') => {
+  const handleNavClick = (view: 'history' | 'leaderboard' | 'registration' | 'test') => {
     setIsOpen(false);
     onNavigate(view);
   };
@@ -77,6 +76,22 @@ export const UserProfile = ({ onNavigate }: UserProfileProps) => {
               >
                 <Trophy size={18} className="text-[#4c8bf5]" />
                 Leaderboard
+              </button>
+
+               <button 
+                onClick={() => handleNavClick('registration')}
+                className="w-full flex items-center gap-3 px-4 py-3 hover:bg-slate-50 text-[#000080] rounded-xl transition-colors font-bold text-sm"
+              >
+                <FileText size={18} className="text-[#4c8bf5]" />
+                Score Registration
+              </button>
+
+              <button 
+                onClick={() => handleNavClick('test')}
+                className="w-full flex items-center gap-3 px-4 py-3 hover:bg-slate-50 text-[#000080] rounded-xl transition-colors font-bold text-sm"
+              >
+                <FlaskConical size={18} className="text-[#4c8bf5]" />
+                Test Page
               </button>
 
               <button 

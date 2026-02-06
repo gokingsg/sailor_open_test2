@@ -1,12 +1,11 @@
-
 import React, { useState } from 'react';
 import { motion, AnimatePresence, useScroll, useTransform } from 'framer-motion';
-import { Menu, X, Info, BookOpen, Gift, UserPlus, MessageSquare, ClipboardList, Trophy } from 'lucide-react';
+import { Menu, X, Info, BookOpen, Gift, UserPlus, MessageSquare, ClipboardList, Trophy, FileText, FlaskConical } from 'lucide-react';
 import { ASSETS } from '../constants';
 
 interface MobileNavProps {
-  activeView: 'home' | 'history' | 'leaderboard';
-  onNavigate: (view: 'home' | 'history' | 'leaderboard') => void;
+  activeView: 'home' | 'history' | 'leaderboard' | 'registration' | 'test';
+  onNavigate: (view: 'home' | 'history' | 'leaderboard' | 'registration' | 'test') => void;
 }
 
 export const MobileNav = ({ activeView, onNavigate }: MobileNavProps) => {
@@ -30,7 +29,7 @@ export const MobileNav = ({ activeView, onNavigate }: MobileNavProps) => {
     }
   };
 
-  const handleNavClick = (view: 'home' | 'history' | 'leaderboard') => {
+  const handleNavClick = (view: 'home' | 'history' | 'leaderboard' | 'registration' | 'test') => {
     setIsOpen(false);
     onNavigate(view);
   };
@@ -91,6 +90,14 @@ export const MobileNav = ({ activeView, onNavigate }: MobileNavProps) => {
 
             <button onClick={() => handleNavClick('leaderboard')} className={`text-2xl font-bold flex items-center gap-4 ${activeView === 'leaderboard' ? 'text-[#4c8bf5]' : ''}`}>
               <Trophy className="text-[#4c8bf5]" /> Leaderboard
+            </button>
+
+             <button onClick={() => handleNavClick('registration')} className={`text-2xl font-bold flex items-center gap-4 ${activeView === 'registration' ? 'text-[#4c8bf5]' : ''}`}>
+              <FileText className="text-[#4c8bf5]" /> Score Registration
+            </button>
+
+             <button onClick={() => handleNavClick('test')} className={`text-2xl font-bold flex items-center gap-4 ${activeView === 'test' ? 'text-[#4c8bf5]' : ''}`}>
+              <FlaskConical className="text-[#4c8bf5]" /> Test Page
             </button>
           </motion.div>
         )}

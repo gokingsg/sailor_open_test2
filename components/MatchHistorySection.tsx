@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { Calendar, CheckCircle, MapPin, XCircle } from 'lucide-react';
 import { MATCH_HISTORY_DATA } from '../constants';
 import { MatchRecord, MatchPlayer } from '../types';
+import { EmptyState } from './EmptyState';
 
 const CURRENT_USER = "Arran Kenna";
 
@@ -11,30 +12,34 @@ interface MatchCardProps {
 }
 
 const MatchCard: React.FC<MatchCardProps> = ({ match }) => {
-  const renderPlayer = (player: MatchPlayer) => {
+  // Sort players: Current User first, then Opponent
+  const players = [match.player1, match.player2].sort((a, b) => {
+    if (a.name === CURRENT_USER) return -1;
+    if (b.name === CURRENT_USER) return 1;
+    return 0;
+  });
+
+  const renderPlayer = (player: MatchPlayer, index: number) => {
     const isMe = player.name === CURRENT_USER;
     const isWinner = player.isWinner;
 
     return (
-      <div className="flex items-center justify-between">
+      <div key={index} className="flex items-center justify-between">
         <div className="flex items-center gap-3">
           <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-black text-white ${
             isMe ? 'bg-[#4c8bf5]' : 'bg-slate-300'
           }`}>
             {player.name.charAt(0)}
           </div>
-          <span className={`font-bold text-sm ${
-            isMe ? 'text-[#000080]' : 'text-slate-500'
-          }`}>
+          <span className="font-bold text-sm text-[#000080]">
             {player.name} {isMe && <span className="text-[#4c8bf5] text-xs opacity-70">(You)</span>}
           </span>
           {isWinner && <CheckCircle size={16} className="text-green-500" />}
-          {!isWinner && isMe && <XCircle size={16} className="text-red-500" />}
         </div>
         <div className="flex gap-2">
           {player.scores.map((s, i) => (
             <span key={i} className={`w-8 h-8 rounded-lg flex items-center justify-center font-bold text-sm ${
-               isMe ? 'bg-slate-100 text-[#000080]' : 'bg-slate-50 text-slate-500'
+               isWinner || isMe ? 'bg-slate-100 text-[#000080]' : 'bg-slate-50 text-slate-500'
             }`}>
               {s}
             </span>
@@ -76,8 +81,7 @@ const MatchCard: React.FC<MatchCardProps> = ({ match }) => {
 
       {/* Players & Scores */}
       <div className="px-6 py-4 space-y-4">
-        {renderPlayer(match.player1)}
-        {renderPlayer(match.player2)}
+        {players.map((player, index) => renderPlayer(player, index))}
       </div>
     </div>
   );
@@ -100,15 +104,26 @@ export const MatchHistorySection = () => {
           <p className="text-slate-500 font-medium">View your past matches, results, and performance stats.</p>
         </div>
 
-        <div className="space-y-6">
-          {MATCH_HISTORY_DATA.map((match) => (
-            <MatchCard key={match.id} match={match} />
-          ))}
-        </div>
+        {MATCH_HISTORY_DATA.length > 0 ? (
+          <div className="space-y-6">
+            {MATCH_HISTORY_DATA.map((match) => (
+              <MatchCard key={match.id} match={match} />
+            ))}
+          </div>
+        ) : (
+          <div className="bg-white rounded-[2rem] border border-slate-100 p-8 shadow-sm">
+             <EmptyState 
+               message="No Match History Found" 
+               description="You haven't participated in any matches yet. Join a league or schedule a match to see your history here." 
+             />
+          </div>
+        )}
         
-        <div className="mt-12 text-center">
-            <p className="text-xs font-bold text-slate-400 uppercase tracking-widest">End of Record</p>
-        </div>
+        {MATCH_HISTORY_DATA.length > 0 && (
+          <div className="mt-12 text-center">
+              <p className="text-xs font-bold text-slate-400 uppercase tracking-widest">End of Record</p>
+          </div>
+        )}
       </motion.div>
     </section>
   );
