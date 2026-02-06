@@ -1,5 +1,5 @@
 import React from 'react';
-import { Info, BookOpen, Gift, UserPlus, MessageSquare, ClipboardList, Trophy, FileText, FlaskConical } from 'lucide-react';
+import { Info, BookOpen, Gift, UserPlus, MessageSquare } from 'lucide-react';
 import { ASSETS } from '../constants';
 
 interface SidebarProps {
@@ -85,48 +85,6 @@ export const Sidebar = ({ activeView, onNavigate }: SidebarProps) => {
             <MessageSquare size={18} className="text-[#4c8bf5]" />
           </span>
           Contact
-        </button>
-        
-        <div className="w-full h-px bg-white/10 my-2"></div>
-        
-        <button 
-          onClick={() => onNavigate('history')}
-          className={`group flex items-center gap-3 text-xl font-bold transition-all text-left hover:translate-x-2 ${activeView === 'history' ? 'text-[#4c8bf5]' : 'text-white'}`}
-        >
-          <span className={`w-8 h-8 rounded-lg flex items-center justify-center transition-colors ${activeView === 'history' ? 'bg-[#4c8bf5] text-white' : 'bg-[#4c8bf5]/20 text-[#4c8bf5] group-hover:bg-[#4c8bf5]/40'}`}>
-            <ClipboardList size={18} />
-          </span>
-          Personal Records
-        </button>
-
-        <button 
-          onClick={() => onNavigate('leaderboard')}
-          className={`group flex items-center gap-3 text-xl font-bold transition-all text-left hover:translate-x-2 ${activeView === 'leaderboard' ? 'text-[#4c8bf5]' : 'text-white'}`}
-        >
-          <span className={`w-8 h-8 rounded-lg flex items-center justify-center transition-colors ${activeView === 'leaderboard' ? 'bg-[#4c8bf5] text-white' : 'bg-[#4c8bf5]/20 text-[#4c8bf5] group-hover:bg-[#4c8bf5]/40'}`}>
-            <Trophy size={18} />
-          </span>
-          Leaderboard
-        </button>
-
-        <button 
-          onClick={() => onNavigate('registration')}
-          className={`group flex items-center gap-3 text-xl font-bold transition-all text-left hover:translate-x-2 ${activeView === 'registration' ? 'text-[#4c8bf5]' : 'text-white'}`}
-        >
-          <span className={`w-8 h-8 rounded-lg flex items-center justify-center transition-colors ${activeView === 'registration' ? 'bg-[#4c8bf5] text-white' : 'bg-[#4c8bf5]/20 text-[#4c8bf5] group-hover:bg-[#4c8bf5]/40'}`}>
-            <FileText size={18} />
-          </span>
-          Score Registration
-        </button>
-
-         <button 
-          onClick={() => onNavigate('test')}
-          className={`group flex items-center gap-3 text-xl font-bold transition-all text-left hover:translate-x-2 ${activeView === 'test' ? 'text-[#4c8bf5]' : 'text-white'}`}
-        >
-          <span className={`w-8 h-8 rounded-lg flex items-center justify-center transition-colors ${activeView === 'test' ? 'bg-[#4c8bf5] text-white' : 'bg-[#4c8bf5]/20 text-[#4c8bf5] group-hover:bg-[#4c8bf5]/40'}`}>
-            <FlaskConical size={18} />
-          </span>
-          Test Page
         </button>
       </nav>
     </div>

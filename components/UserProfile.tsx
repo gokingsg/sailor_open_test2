@@ -4,9 +4,10 @@ import { LogOut, ClipboardList, Trophy, FileText, FlaskConical } from 'lucide-re
 
 interface UserProfileProps {
   onNavigate: (view: 'home' | 'history' | 'leaderboard' | 'registration' | 'test') => void;
+  align?: 'left' | 'right';
 }
 
-export const UserProfile = ({ onNavigate }: UserProfileProps) => {
+export const UserProfile = ({ onNavigate, align = 'right' }: UserProfileProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
@@ -43,7 +44,7 @@ export const UserProfile = ({ onNavigate }: UserProfileProps) => {
               animate: { opacity: 1, y: 0, scale: 1 },
               exit: { opacity: 0, y: 10, scale: 0.95 }
             } as any)}
-            className="absolute right-0 mt-4 w-64 bg-white rounded-2xl shadow-2xl border border-slate-100 overflow-hidden z-[100]"
+            className={`absolute ${align === 'left' ? 'left-0' : 'right-0'} mt-4 w-64 bg-white rounded-2xl shadow-2xl border border-slate-100 overflow-hidden z-[100]`}
           >
             <div className="p-6 border-b border-slate-50">
               <div className="flex items-center gap-4 mb-4">

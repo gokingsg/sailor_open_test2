@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence, useScroll, useTransform } from 'framer-motion';
-import { Menu, X, Info, BookOpen, Gift, UserPlus, MessageSquare, ClipboardList, Trophy, FileText, FlaskConical } from 'lucide-react';
+import { Menu, X, Info, BookOpen, Gift, UserPlus, MessageSquare } from 'lucide-react';
 import { ASSETS } from '../constants';
+import { UserProfile } from './UserProfile';
 
 interface MobileNavProps {
   activeView: 'home' | 'history' | 'leaderboard' | 'registration' | 'test';
@@ -41,6 +42,10 @@ export const MobileNav = ({ activeView, onNavigate }: MobileNavProps) => {
         style={{ height: headerHeight } as any}
         className="relative flex items-center justify-center bg-[#000080] text-white shadow-lg px-6 overflow-visible"
       >
+        <div className="absolute left-6 z-[110]">
+          <UserProfile onNavigate={onNavigate} align="left" />
+        </div>
+
         {/* Fixed Framer Motion type error by casting style to any including transform property 'y' */}
         <motion.div 
           style={{ width: logoSize, height: logoSize, y: logoY } as any}
@@ -80,24 +85,6 @@ export const MobileNav = ({ activeView, onNavigate }: MobileNavProps) => {
             </button>
             <button onClick={() => scrollTo('contact-section')} className="text-2xl font-bold flex items-center gap-4">
               <MessageSquare className="text-[#4c8bf5]" /> Contact
-            </button>
-
-            <div className="w-full h-px bg-white/10"></div>
-
-            <button onClick={() => handleNavClick('history')} className={`text-2xl font-bold flex items-center gap-4 ${activeView === 'history' ? 'text-[#4c8bf5]' : ''}`}>
-              <ClipboardList className="text-[#4c8bf5]" /> Personal Records
-            </button>
-
-            <button onClick={() => handleNavClick('leaderboard')} className={`text-2xl font-bold flex items-center gap-4 ${activeView === 'leaderboard' ? 'text-[#4c8bf5]' : ''}`}>
-              <Trophy className="text-[#4c8bf5]" /> Leaderboard
-            </button>
-
-             <button onClick={() => handleNavClick('registration')} className={`text-2xl font-bold flex items-center gap-4 ${activeView === 'registration' ? 'text-[#4c8bf5]' : ''}`}>
-              <FileText className="text-[#4c8bf5]" /> Score Registration
-            </button>
-
-             <button onClick={() => handleNavClick('test')} className={`text-2xl font-bold flex items-center gap-4 ${activeView === 'test' ? 'text-[#4c8bf5]' : ''}`}>
-              <FlaskConical className="text-[#4c8bf5]" /> Test Page
             </button>
           </motion.div>
         )}
