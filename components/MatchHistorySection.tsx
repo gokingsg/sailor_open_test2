@@ -1,14 +1,49 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Calendar, CheckCircle, MapPin, Clock } from 'lucide-react';
+import { Calendar, CheckCircle, MapPin, XCircle } from 'lucide-react';
 import { MATCH_HISTORY_DATA } from '../constants';
-import { MatchRecord } from '../types';
+import { MatchRecord, MatchPlayer } from '../types';
+
+const CURRENT_USER = "Arran Kenna";
 
 interface MatchCardProps {
   match: MatchRecord;
 }
 
 const MatchCard: React.FC<MatchCardProps> = ({ match }) => {
+  const renderPlayer = (player: MatchPlayer) => {
+    const isMe = player.name === CURRENT_USER;
+    const isWinner = player.isWinner;
+
+    return (
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-black text-white ${
+            isMe ? 'bg-[#4c8bf5]' : 'bg-slate-300'
+          }`}>
+            {player.name.charAt(0)}
+          </div>
+          <span className={`font-bold text-sm ${
+            isMe ? 'text-[#000080]' : 'text-slate-500'
+          }`}>
+            {player.name} {isMe && <span className="text-[#4c8bf5] text-xs opacity-70">(You)</span>}
+          </span>
+          {isWinner && <CheckCircle size={16} className="text-green-500" />}
+          {!isWinner && isMe && <XCircle size={16} className="text-red-500" />}
+        </div>
+        <div className="flex gap-2">
+          {player.scores.map((s, i) => (
+            <span key={i} className={`w-8 h-8 rounded-lg flex items-center justify-center font-bold text-sm ${
+               isMe ? 'bg-slate-100 text-[#000080]' : 'bg-slate-50 text-slate-500'
+            }`}>
+              {s}
+            </span>
+          ))}
+        </div>
+      </div>
+    );
+  };
+
   return (
     <div className="bg-white rounded-3xl overflow-hidden border border-slate-100 shadow-sm hover:shadow-md transition-all">
       {/* Card Header */}
@@ -41,45 +76,8 @@ const MatchCard: React.FC<MatchCardProps> = ({ match }) => {
 
       {/* Players & Scores */}
       <div className="px-6 py-4 space-y-4">
-        {/* Player 1 */}
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-black text-white ${match.player1.isWinner ? 'bg-[#4c8bf5]' : 'bg-slate-300'}`}>
-              {match.player1.name.charAt(0)}
-            </div>
-            <span className={`font-bold text-sm ${match.player1.isWinner ? 'text-[#000080]' : 'text-slate-500'}`}>
-              {match.player1.name}
-            </span>
-            {match.player1.isWinner && <CheckCircle size={16} className="text-green-500" />}
-          </div>
-          <div className="flex gap-2">
-            {match.player1.scores.map((s, i) => (
-              <span key={i} className="w-8 h-8 bg-slate-50 rounded-lg flex items-center justify-center font-bold text-slate-700 text-sm">
-                {s}
-              </span>
-            ))}
-          </div>
-        </div>
-
-        {/* Player 2 */}
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-black text-white ${match.player2.isWinner ? 'bg-[#4c8bf5]' : 'bg-slate-300'}`}>
-              {match.player2.name.charAt(0)}
-            </div>
-            <span className={`font-bold text-sm ${match.player2.isWinner ? 'text-[#000080]' : 'text-slate-500'}`}>
-              {match.player2.name}
-            </span>
-            {match.player2.isWinner && <CheckCircle size={16} className="text-green-500" />}
-          </div>
-          <div className="flex gap-2">
-            {match.player2.scores.map((s, i) => (
-              <span key={i} className="w-8 h-8 bg-slate-50 rounded-lg flex items-center justify-center font-bold text-slate-700 text-sm">
-                {s}
-              </span>
-            ))}
-          </div>
-        </div>
+        {renderPlayer(match.player1)}
+        {renderPlayer(match.player2)}
       </div>
     </div>
   );

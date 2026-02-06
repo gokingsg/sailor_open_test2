@@ -124,6 +124,18 @@ export const CONTACT_DATA: ContactEntry[] = [
 
 export const MATCH_HISTORY_DATA: MatchRecord[] = [
   {
+    id: "m4",
+    leagueName: "Sailors Singles Flex League",
+    season: "December - February 2025/26",
+    market: "Singapore",
+    city: "Singapore",
+    date: "JAN 12, 2026",
+    time: "7:00 PM",
+    status: "Completed",
+    player1: { name: "Arran Kenna", isWinner: false, scores: [3, 4] },
+    player2: { name: "David Chen", isWinner: true, scores: [6, 6] }
+  },
+  {
     id: "m1",
     leagueName: "Sailors Singles Flex League",
     season: "December - February 2025/26",
