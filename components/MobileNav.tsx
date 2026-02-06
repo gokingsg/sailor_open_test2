@@ -1,10 +1,15 @@
 
 import React, { useState } from 'react';
 import { motion, AnimatePresence, useScroll, useTransform } from 'framer-motion';
-import { Menu, X, Info, BookOpen, Gift, UserPlus, MessageSquare } from 'lucide-react';
+import { Menu, X, Info, BookOpen, Gift, UserPlus, MessageSquare, ClipboardList, Home } from 'lucide-react';
 import { ASSETS } from '../constants';
 
-export const MobileNav = () => {
+interface MobileNavProps {
+  activeView: 'home' | 'history';
+  onNavigate: (view: 'home' | 'history') => void;
+}
+
+export const MobileNav = ({ activeView, onNavigate }: MobileNavProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const { scrollY } = useScroll();
   const headerHeight = useTransform(scrollY, [0, 100], ["8rem", "4rem"]);
@@ -12,9 +17,22 @@ export const MobileNav = () => {
   const logoY = useTransform(scrollY, [0, 100], ["1rem", "0rem"]);
 
   const scrollTo = (id: string) => {
-    const el = document.getElementById(id);
-    if (el) el.scrollIntoView({ behavior: 'smooth' });
     setIsOpen(false);
+    if (activeView !== 'home') {
+      onNavigate('home');
+      setTimeout(() => {
+        const el = document.getElementById(id);
+        if (el) el.scrollIntoView({ behavior: 'smooth' });
+      }, 100);
+    } else {
+      const el = document.getElementById(id);
+      if (el) el.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
+
+  const handleNavClick = (view: 'home' | 'history') => {
+    setIsOpen(false);
+    onNavigate(view);
   };
 
   return (
@@ -28,7 +46,7 @@ export const MobileNav = () => {
         <motion.div 
           style={{ width: logoSize, height: logoSize, y: logoY } as any}
           className="flex items-center justify-center cursor-pointer"
-          onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+          onClick={() => handleNavClick('home')}
         >
            <img src={ASSETS.logo} alt="Logo" className="w-full h-full object-contain" />
         </motion.div>
@@ -49,6 +67,12 @@ export const MobileNav = () => {
             } as any)}
             className="bg-[#000080] p-8 text-white flex flex-col gap-8 shadow-2xl absolute top-full left-0 w-full z-[105]"
           >
+            {activeView === 'history' && (
+              <button onClick={() => handleNavClick('home')} className="text-2xl font-bold flex items-center gap-4">
+                <Home className="text-[#4c8bf5]" /> Home
+              </button>
+            )}
+
             <button onClick={() => scrollTo('about-section')} className="text-2xl font-bold flex items-center gap-4">
               <Info className="text-[#4c8bf5]" /> About
             </button>
@@ -64,6 +88,12 @@ export const MobileNav = () => {
             </button>
             <button onClick={() => scrollTo('contact-section')} className="text-2xl font-bold flex items-center gap-4">
               <MessageSquare className="text-[#4c8bf5]" /> Contact
+            </button>
+
+            <div className="w-full h-px bg-white/10"></div>
+
+            <button onClick={() => handleNavClick('history')} className={`text-2xl font-bold flex items-center gap-4 ${activeView === 'history' ? 'text-[#4c8bf5]' : ''}`}>
+              <ClipboardList className="text-[#4c8bf5]" /> Personal Records
             </button>
           </motion.div>
         )}

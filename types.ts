@@ -62,3 +62,23 @@ export interface ContactEntry {
   city: string;
   committee: string[];
 }
+
+export interface MatchPlayer {
+  name: string;
+  avatar?: string; // Initial or image url
+  isWinner: boolean;
+  scores: (string | number)[]; // Array for sets, e.g. [6, 4] or ['-']
+}
+
+export interface MatchRecord {
+  id: string;
+  leagueName: string;
+  season: string;
+  market: string;
+  city: string;
+  date: string;
+  time: string;
+  status: 'Completed' | 'Walkover' | 'In Progress' | 'Cancelled';
+  player1: MatchPlayer;
+  player2: MatchPlayer;
+}

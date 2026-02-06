@@ -1,5 +1,5 @@
 
-import { MatchmakerQuestion, LeaderboardEntry, PrizeEntry, ContactEntry } from './types';
+import { MatchmakerQuestion, LeaderboardEntry, PrizeEntry, ContactEntry, MatchRecord } from './types';
 
 export const ASSETS = {
   logo: "/logo.png",
@@ -120,4 +120,43 @@ export const CONTACT_DATA: ContactEntry[] = [
   { market: "Taiwan", city: "Taipei", committee: ["Alice Wu (alice.wu@shopee.com)", "Toby (lutob@garena.com)"] },
   { market: "Thailand", city: "Bangkok", committee: ["Mint (mint.amornwutthisutja@shopee.com)", "Bank (akaraphon.s@sea.com)"] },
   { market: "Vietnam", city: "Hanoi\nHo Chi Minh City", committee: ["Tram (tram.dinh@shopee.com)", "Van Anh (vananh.tran@garena.vn)", "Linh (manhlinh.nguyen@garena.vn)"] },
+];
+
+export const MATCH_HISTORY_DATA: MatchRecord[] = [
+  {
+    id: "m1",
+    leagueName: "Sailors Singles Flex League",
+    season: "December - February 2025/26",
+    market: "Singapore",
+    city: "Singapore",
+    date: "JAN 10, 2026",
+    time: "3:00 PM",
+    status: "Completed",
+    player1: { name: "Ethan Harker", isWinner: false, scores: [1, 5] },
+    player2: { name: "Arran Kenna", isWinner: true, scores: [6, 7] }
+  },
+  {
+    id: "m2",
+    leagueName: "Sailors Singles Flex League",
+    season: "December - February 2025/26",
+    market: "Singapore",
+    city: "Singapore",
+    date: "JAN 4, 2026",
+    time: "6:00 PM",
+    status: "Walkover",
+    player1: { name: "Clyde Densel Duran", isWinner: false, scores: ["-", "-", "-"] },
+    player2: { name: "Arran Kenna", isWinner: true, scores: ["-", "-", "-"] }
+  },
+  {
+    id: "m3",
+    leagueName: "Sailors Singles Flex League",
+    season: "December - February 2025/26",
+    market: "Singapore",
+    city: "Singapore",
+    date: "JAN 4, 2026",
+    time: "4:00 PM",
+    status: "Completed",
+    player1: { name: "Arran Kenna", isWinner: true, scores: [4, 6, 6] },
+    player2: { name: "Simon Swenson", isWinner: false, scores: [6, 3, 4] }
+  }
 ];

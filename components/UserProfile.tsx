@@ -1,9 +1,13 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { LogOut } from 'lucide-react';
+import { LogOut, ClipboardList } from 'lucide-react';
 
-export const UserProfile = () => {
+interface UserProfileProps {
+  onNavigate: (view: 'home' | 'history') => void;
+}
+
+export const UserProfile = ({ onNavigate }: UserProfileProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
@@ -16,6 +20,11 @@ export const UserProfile = () => {
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
+
+  const handleHistoryClick = () => {
+    setIsOpen(false);
+    onNavigate('history');
+  };
 
   return (
     <div className="relative" ref={dropdownRef}>
@@ -53,7 +62,15 @@ export const UserProfile = () => {
               </div>
             </div>
             
-            <div className="p-2">
+            <div className="p-2 space-y-1">
+              <button 
+                onClick={handleHistoryClick}
+                className="w-full flex items-center gap-3 px-4 py-3 hover:bg-slate-50 text-[#000080] rounded-xl transition-colors font-bold text-sm"
+              >
+                <ClipboardList size={18} className="text-[#4c8bf5]" />
+                Match History
+              </button>
+
               <button 
                 onClick={() => alert('Mock Logout: You would be redirected.')}
                 className="w-full flex items-center gap-3 px-4 py-3 hover:bg-red-50 text-red-500 rounded-xl transition-colors font-bold text-sm"

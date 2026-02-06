@@ -1,12 +1,26 @@
 
 import React from 'react';
-import { Info, BookOpen, Gift, UserPlus, MessageSquare } from 'lucide-react';
+import { Info, BookOpen, Gift, UserPlus, MessageSquare, ClipboardList, Home } from 'lucide-react';
 import { ASSETS } from '../constants';
 
-export const Sidebar = () => {
+interface SidebarProps {
+  activeView: 'home' | 'history';
+  onNavigate: (view: 'home' | 'history') => void;
+}
+
+export const Sidebar = ({ activeView, onNavigate }: SidebarProps) => {
   const scrollTo = (id: string) => {
-    const el = document.getElementById(id);
-    if (el) el.scrollIntoView({ behavior: 'smooth' });
+    if (activeView !== 'home') {
+      onNavigate('home');
+      // Give time for render
+      setTimeout(() => {
+        const el = document.getElementById(id);
+        if (el) el.scrollIntoView({ behavior: 'smooth' });
+      }, 100);
+    } else {
+      const el = document.getElementById(id);
+      if (el) el.scrollIntoView({ behavior: 'smooth' });
+    }
   };
 
   return (
@@ -19,7 +33,7 @@ export const Sidebar = () => {
         backgroundRepeat: 'no-repeat'
       }}
     >
-      <div className="relative z-10 mb-16 cursor-pointer" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>
+      <div className="relative z-10 mb-16 cursor-pointer" onClick={() => onNavigate('home')}>
         <img 
           src={ASSETS.logo} 
           alt="Sailors Open 2026" 
@@ -28,6 +42,18 @@ export const Sidebar = () => {
       </div>
 
       <nav className="relative z-10 flex flex-col gap-8">
+        {activeView === 'history' && (
+          <button 
+            onClick={() => onNavigate('home')}
+            className="group flex items-center gap-3 text-xl font-bold transition-all text-left hover:translate-x-2"
+          >
+            <span className="w-8 h-8 rounded-lg bg-[#4c8bf5]/20 flex items-center justify-center group-hover:bg-[#4c8bf5]/40 transition-colors">
+              <Home size={18} className="text-[#4c8bf5]" />
+            </span>
+            Back to Home
+          </button>
+        )}
+
         <button 
           onClick={() => scrollTo('about-section')}
           className="group flex items-center gap-3 text-xl font-bold transition-all text-left hover:translate-x-2"
@@ -73,6 +99,18 @@ export const Sidebar = () => {
             <MessageSquare size={18} className="text-[#4c8bf5]" />
           </span>
           Contact
+        </button>
+        
+        <div className="w-full h-px bg-white/10 my-2"></div>
+        
+        <button 
+          onClick={() => onNavigate('history')}
+          className={`group flex items-center gap-3 text-xl font-bold transition-all text-left hover:translate-x-2 ${activeView === 'history' ? 'text-[#4c8bf5]' : 'text-white'}`}
+        >
+          <span className={`w-8 h-8 rounded-lg flex items-center justify-center transition-colors ${activeView === 'history' ? 'bg-[#4c8bf5] text-white' : 'bg-[#4c8bf5]/20 text-[#4c8bf5] group-hover:bg-[#4c8bf5]/40'}`}>
+            <ClipboardList size={18} />
+          </span>
+          Personal Records
         </button>
       </nav>
     </div>
