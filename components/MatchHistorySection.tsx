@@ -116,7 +116,7 @@ export const MatchHistorySection = ({ filterPlayer, onBack }: MatchHistorySectio
         className="max-w-3xl mx-auto"
       >
         <div className="mb-10">
-          {filterPlayer && filterPlayer !== CURRENT_USER ? (
+          {filterPlayer ? (
              <div className="flex flex-col gap-4">
                 {onBack && (
                   <button onClick={onBack} className="flex items-center gap-2 text-[#4c8bf5] font-bold text-sm hover:underline w-fit">
