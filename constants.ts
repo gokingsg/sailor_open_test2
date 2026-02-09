@@ -87,11 +87,11 @@ export const QUESTIONS: MatchmakerQuestion[] = [
 ];
 
 export const LEADERBOARD_DATA: LeaderboardEntry[] = [
-  { rank: 1, name: "Player A", played: 5, won: 5, lost: 0, setsW: 10, setsL: 1, gamesW: 65, gamesL: 32, gamesPct: "67.01%", points: 15 },
-  { rank: 2, name: "Player B", played: 4, won: 3, lost: 1, setsW: 6, setsL: 3, gamesW: 48, gamesL: 40, gamesPct: "54.55%", points: 10 },
-  { rank: 3, name: "Player C", played: 5, won: 2, lost: 3, setsW: 5, setsL: 7, gamesW: 45, gamesL: 55, gamesPct: "45.00%", points: 9 },
-  { rank: 4, name: "Player D", played: 4, won: 1, lost: 3, setsW: 2, setsL: 6, gamesW: 30, gamesL: 42, gamesPct: "41.67%", points: 6 },
-  { rank: 5, name: "Player E", played: 4, won: 0, lost: 4, setsW: 0, setsL: 8, gamesW: 22, gamesL: 48, gamesPct: "31.43%", points: 4 },
+  { rank: 1, name: "Arran Kenna", played: 5, won: 5, lost: 0, setsW: 10, setsL: 1, gamesW: 65, gamesL: 32, gamesPct: "67.01%", points: 15 },
+  { rank: 2, name: "David Chen", played: 4, won: 3, lost: 1, setsW: 6, setsL: 3, gamesW: 48, gamesL: 40, gamesPct: "54.55%", points: 10 },
+  { rank: 3, name: "Simon Swenson", played: 5, won: 2, lost: 3, setsW: 5, setsL: 7, gamesW: 45, gamesL: 55, gamesPct: "45.00%", points: 9 },
+  { rank: 4, name: "Ethan Harker", played: 4, won: 1, lost: 3, setsW: 2, setsL: 6, gamesW: 30, gamesL: 42, gamesPct: "41.67%", points: 6 },
+  { rank: 5, name: "Clyde Densel Duran", played: 4, won: 0, lost: 4, setsW: 0, setsL: 8, gamesW: 22, gamesL: 48, gamesPct: "31.43%", points: 4 },
 ];
 
 export const GLOBAL_PRIZES: PrizeEntry[] = [

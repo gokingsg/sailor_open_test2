@@ -136,7 +136,7 @@ export const ScoreRegistrationSection = ({ initialData, titleOverride }: ScoreRe
       >
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-10">
           <div>
-            <h1 className="text-3xl lg:text-5xl font-black text-[#000080] mb-4 uppercase">{titleOverride || "SCORE REGISTRATION"}</h1>
+            <h1 className="text-3xl lg:text-5xl font-black text-[#000080] mb-4 uppercase">{titleOverride || "SUBMIT MATCH RESULT"}</h1>
             <p className="text-slate-500 font-medium">Admin panel for recording official match results.</p>
           </div>
           <button 

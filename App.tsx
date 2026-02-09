@@ -15,9 +15,26 @@ import { Footer } from './components/Footer';
 
 export default function App() {
   const [activeView, setActiveView] = useState<'home' | 'history' | 'leaderboard' | 'registration' | 'test'>('home');
+  const [selectedPlayer, setSelectedPlayer] = useState<string | null>(null);
 
   const handleNavigate = (view: 'home' | 'history' | 'leaderboard' | 'registration' | 'test') => {
     setActiveView(view);
+    // If navigating to history explicitly via menu, clear selected player (show own history)
+    // If navigating to other pages, clear it as well.
+    // The only time we keep it is if we are navigating FROM leaderboard TO history via click
+    if (view !== 'history') {
+      setSelectedPlayer(null);
+    } else {
+      // Navigating to history via menu button -> clear selected player to show "My History"
+      // Note: If this function is called from Leaderboard click, we handle that separately below
+      setSelectedPlayer(null);
+    }
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const handlePlayerClick = (playerName: string) => {
+    setSelectedPlayer(playerName);
+    setActiveView('history');
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
@@ -40,12 +57,18 @@ export default function App() {
           </div>
         ) : activeView === 'history' ? (
           <div className="flex-1 flex flex-col">
-            <MatchHistorySection />
+            <MatchHistorySection 
+              filterPlayer={selectedPlayer} 
+              onBack={() => {
+                setActiveView('leaderboard');
+                setSelectedPlayer(null);
+              }}
+            />
             <Footer />
           </div>
         ) : activeView === 'leaderboard' ? (
           <div className="flex-1 flex flex-col">
-            <LeaderboardSection />
+            <LeaderboardSection onPlayerClick={handlePlayerClick} />
             <Footer />
           </div>
         ) : activeView === 'registration' ? (

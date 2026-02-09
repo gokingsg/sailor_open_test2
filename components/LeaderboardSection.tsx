@@ -1,12 +1,15 @@
-
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Info, HelpCircle, ChevronDown, Filter } from 'lucide-react';
+import { Info, HelpCircle, ChevronDown, Filter, ChevronRight } from 'lucide-react';
 import { LEADERBOARD_DATA, LOCATIONS } from '../constants';
 
 const CATEGORIES_LEADERBOARD = ["Mens", "Womens"];
 
-export const LeaderboardSection = () => {
+interface LeaderboardSectionProps {
+  onPlayerClick?: (playerName: string) => void;
+}
+
+export const LeaderboardSection = ({ onPlayerClick }: LeaderboardSectionProps) => {
   const [selectedMarket, setSelectedMarket] = useState('Singapore');
   const [selectedCity, setSelectedCity] = useState('Singapore');
   const [selectedCategory, setSelectedCategory] = useState('Mens');
@@ -129,7 +132,15 @@ export const LeaderboardSection = () => {
               {LEADERBOARD_DATA.map((entry, idx) => (
                 <tr key={idx} className="hover:bg-slate-50 transition-colors group">
                   <td className="px-6 py-5 font-bold text-[#000080] border-r border-slate-50 text-center">{entry.rank}</td>
-                  <td className="px-6 py-5 font-bold text-[#000080] border-r border-slate-50">{entry.name}</td>
+                  <td className="px-6 py-5 border-r border-slate-50">
+                    <button 
+                      onClick={() => onPlayerClick?.(entry.name)}
+                      className="group/name flex items-center gap-2 font-bold text-[#4c8bf5] hover:text-[#000080] transition-colors text-left"
+                    >
+                      {entry.name}
+                      <ChevronRight size={14} className="opacity-0 group-hover/name:opacity-100 transition-opacity -translate-x-2 group-hover/name:translate-x-0" />
+                    </button>
+                  </td>
                   <td className="px-10 py-5 font-black text-[#000080] border-r border-slate-50 text-center bg-slate-50/40">{entry.played}</td>
                   <td className="px-10 py-5 font-black text-[#000080] border-r border-slate-50 text-center bg-slate-50/60">{entry.won}</td>
                   <td className="px-10 py-5 font-black text-[#000080] border-r border-slate-50 text-center bg-slate-50/80">{entry.lost}</td>

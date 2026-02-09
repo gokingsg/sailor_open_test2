@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Calendar, CheckCircle, MapPin, XCircle } from 'lucide-react';
+import { Calendar, CheckCircle, MapPin, XCircle, ArrowLeft } from 'lucide-react';
 import { MATCH_HISTORY_DATA } from '../constants';
 import { MatchRecord, MatchPlayer } from '../types';
 import { EmptyState } from './EmptyState';
@@ -9,17 +9,21 @@ const CURRENT_USER = "Arran Kenna";
 
 interface MatchCardProps {
   match: MatchRecord;
+  focusPlayer?: string;
 }
 
-const MatchCard: React.FC<MatchCardProps> = ({ match }) => {
-  // Sort players: Current User first, then Opponent
+const MatchCard: React.FC<MatchCardProps> = ({ match, focusPlayer }) => {
+  const primaryPlayer = focusPlayer || CURRENT_USER;
+
+  // Sort players: Focus Player first, then others
   const players = [match.player1, match.player2].sort((a, b) => {
-    if (a.name === CURRENT_USER) return -1;
-    if (b.name === CURRENT_USER) return 1;
+    if (a.name === primaryPlayer) return -1;
+    if (b.name === primaryPlayer) return 1;
     return 0;
   });
 
   const renderPlayer = (player: MatchPlayer, index: number) => {
+    const isFocus = player.name === primaryPlayer;
     const isMe = player.name === CURRENT_USER;
     const isWinner = player.isWinner;
 
@@ -27,7 +31,7 @@ const MatchCard: React.FC<MatchCardProps> = ({ match }) => {
       <div key={index} className="flex items-center justify-between">
         <div className="flex items-center gap-3">
           <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-black text-white ${
-            isMe ? 'bg-[#4c8bf5]' : 'bg-slate-300'
+            isFocus ? 'bg-[#4c8bf5]' : 'bg-slate-300'
           }`}>
             {player.name.charAt(0)}
           </div>
@@ -39,7 +43,7 @@ const MatchCard: React.FC<MatchCardProps> = ({ match }) => {
         <div className="flex gap-2">
           {player.scores.map((s, i) => (
             <span key={i} className={`w-8 h-8 rounded-lg flex items-center justify-center font-bold text-sm ${
-               isWinner || isMe ? 'bg-slate-100 text-[#000080]' : 'bg-slate-50 text-slate-500'
+               isWinner || isFocus ? 'bg-slate-100 text-[#000080]' : 'bg-slate-50 text-slate-500'
             }`}>
               {s}
             </span>
@@ -87,7 +91,19 @@ const MatchCard: React.FC<MatchCardProps> = ({ match }) => {
   );
 };
 
-export const MatchHistorySection = () => {
+interface MatchHistorySectionProps {
+  filterPlayer?: string | null;
+  onBack?: () => void;
+}
+
+export const MatchHistorySection = ({ filterPlayer, onBack }: MatchHistorySectionProps) => {
+  // Use passed filter player or default to current user for filtering
+  const targetPlayer = filterPlayer || CURRENT_USER;
+
+  const filteredData = MATCH_HISTORY_DATA.filter(match => 
+    match.player1.name === targetPlayer || match.player2.name === targetPlayer
+  );
+
   return (
     <section className="relative px-6 lg:px-12 xl:px-24 py-12 lg:py-20 bg-slate-50 min-h-screen">
        {/* Fixed Framer Motion type error by casting props to any */}
@@ -100,26 +116,42 @@ export const MatchHistorySection = () => {
         className="max-w-3xl mx-auto"
       >
         <div className="mb-10">
-          <h1 className="text-3xl lg:text-5xl font-black text-[#000080] mb-4">MATCH HISTORY</h1>
-          <p className="text-slate-500 font-medium">View your past matches, results, and performance stats.</p>
+          {filterPlayer && filterPlayer !== CURRENT_USER ? (
+             <div className="flex flex-col gap-4">
+                {onBack && (
+                  <button onClick={onBack} className="flex items-center gap-2 text-[#4c8bf5] font-bold text-sm hover:underline w-fit">
+                    <ArrowLeft size={16} /> Back
+                  </button>
+                )}
+                <div>
+                   <h1 className="text-3xl lg:text-5xl font-black text-[#000080] mb-2 uppercase">{filterPlayer}</h1>
+                   <p className="text-slate-500 font-medium">Viewing match history for this player.</p>
+                </div>
+             </div>
+          ) : (
+             <div>
+                <h1 className="text-3xl lg:text-5xl font-black text-[#000080] mb-4">MATCH HISTORY</h1>
+                <p className="text-slate-500 font-medium">View your past matches, results, and performance stats.</p>
+             </div>
+          )}
         </div>
 
-        {MATCH_HISTORY_DATA.length > 0 ? (
+        {filteredData.length > 0 ? (
           <div className="space-y-6">
-            {MATCH_HISTORY_DATA.map((match) => (
-              <MatchCard key={match.id} match={match} />
+            {filteredData.map((match) => (
+              <MatchCard key={match.id} match={match} focusPlayer={targetPlayer} />
             ))}
           </div>
         ) : (
           <div className="bg-white rounded-[2rem] border border-slate-100 p-8 shadow-sm">
              <EmptyState 
                message="No Match History Found" 
-               description="You haven't participated in any matches yet. Join a league or schedule a match to see your history here." 
+               description={filterPlayer ? `No match records found for ${filterPlayer}.` : "You haven't participated in any matches yet."} 
              />
           </div>
         )}
         
-        {MATCH_HISTORY_DATA.length > 0 && (
+        {filteredData.length > 0 && (
           <div className="mt-12 text-center">
               <p className="text-xs font-bold text-slate-400 uppercase tracking-widest">End of Record</p>
           </div>

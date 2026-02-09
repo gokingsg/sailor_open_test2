@@ -84,7 +84,7 @@ export const UserProfile = ({ onNavigate, align = 'right' }: UserProfileProps) =
                 className="w-full flex items-center gap-3 px-4 py-3 hover:bg-slate-50 text-[#000080] rounded-xl transition-colors font-bold text-sm"
               >
                 <FileText size={18} className="text-[#4c8bf5]" />
-                Score Registration
+                Submit Match Result
               </button>
 
               <button 
