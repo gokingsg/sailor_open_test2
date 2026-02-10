@@ -120,8 +120,6 @@ export const LeaderboardSection = ({ onPlayerClick }: LeaderboardSectionProps) =
                 <th className="px-10 py-5 font-black text-[#000080] text-sm uppercase tracking-wider border-r border-white/20 text-center bg-[#c5daf3]">P</th>
                 <th className="px-10 py-5 font-black text-[#000080] text-sm uppercase tracking-wider border-r border-white/20 text-center bg-[#b8d2f0]">W</th>
                 <th className="px-10 py-5 font-black text-[#000080] text-sm uppercase tracking-wider border-r border-white/20 text-center bg-[#abc9ec]">L</th>
-                <th className="px-4 py-5 font-black text-[#000080] text-sm uppercase tracking-wider border-r border-white/20 text-center">Sets W</th>
-                <th className="px-4 py-5 font-black text-[#000080] text-sm uppercase tracking-wider border-r border-white/20 text-center">Sets L</th>
                 <th className="px-4 py-5 font-black text-[#000080] text-sm uppercase tracking-wider border-r border-white/20 text-center">Games W</th>
                 <th className="px-4 py-5 font-black text-[#000080] text-sm uppercase tracking-wider border-r border-white/20 text-center">Games L</th>
                 <th className="px-6 py-5 font-black text-[#000080] text-sm uppercase tracking-wider border-r border-white/20 text-center">Games % Won</th>
@@ -144,8 +142,6 @@ export const LeaderboardSection = ({ onPlayerClick }: LeaderboardSectionProps) =
                   <td className="px-10 py-5 font-black text-[#000080] border-r border-slate-50 text-center bg-slate-50/40">{entry.played}</td>
                   <td className="px-10 py-5 font-black text-[#000080] border-r border-slate-50 text-center bg-slate-50/60">{entry.won}</td>
                   <td className="px-10 py-5 font-black text-[#000080] border-r border-slate-50 text-center bg-slate-50/80">{entry.lost}</td>
-                  <td className="px-4 py-5 font-medium text-slate-600 border-r border-slate-50 text-center">{entry.setsW}</td>
-                  <td className="px-4 py-5 font-medium text-slate-600 border-r border-slate-50 text-center">{entry.setsL}</td>
                   <td className="px-4 py-5 font-medium text-slate-600 border-r border-slate-50 text-center">{entry.gamesW}</td>
                   <td className="px-4 py-5 font-medium text-slate-600 border-r border-slate-50 text-center">{entry.gamesL}</td>
                   <td className="px-6 py-5 font-medium text-slate-600 border-r border-slate-50 text-center">{entry.gamesPct}</td>
@@ -154,7 +150,7 @@ export const LeaderboardSection = ({ onPlayerClick }: LeaderboardSectionProps) =
               ))}
               {LEADERBOARD_DATA.length === 0 && (
                 <tr>
-                   <td colSpan={11} className="px-6 py-12 text-center text-slate-400 font-bold italic">
+                   <td colSpan={9} className="px-6 py-12 text-center text-slate-400 font-bold italic">
                       No match results recorded yet for this selection.
                    </td>
                 </tr>
@@ -178,14 +174,10 @@ export const LeaderboardSection = ({ onPlayerClick }: LeaderboardSectionProps) =
               <span className="text-slate-500 font-medium">Matches Won and Lost.</span>
             </li>
             <li className="flex gap-2 text-sm">
-              <span className="font-black text-[#000080] min-w-[80px]">Sets W/L:</span>
-              <span className="text-slate-500 font-medium">Sets Won and Lost for the season.</span>
-            </li>
-            <li className="flex gap-2 text-sm">
               <span className="font-black text-[#000080] min-w-[80px]">Games W/L:</span>
               <span className="text-slate-500 font-medium">Your total games Won and Lost.</span>
             </li>
-            <li className="flex gap-2 text-sm md:col-span-2">
+            <li className="flex gap-2 text-sm">
               <span className="font-black text-[#000080] min-w-[80px]">Games % Won:</span>
               <span className="text-slate-500 font-medium">Percentage of Games Won.</span>
             </li>

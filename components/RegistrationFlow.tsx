@@ -1,7 +1,6 @@
-
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ChevronDown, Check, Trophy } from 'lucide-react';
+import { ChevronDown, Check, Trophy, CalendarOff, Clock } from 'lucide-react';
 import { CATEGORIES, LOCATIONS, QUESTIONS, RATING_PROGRAMS, RATINGS_MAP } from '../constants';
 
 export const RegistrationFlow = () => {
@@ -16,6 +15,9 @@ export const RegistrationFlow = () => {
   
   const [ratingProgram, setRatingProgram] = useState('');
   const [ratingValue, setRatingValue] = useState('');
+
+  // Set this to true to show the Registration Closed state
+  const REGISTRATION_CLOSED = true;
 
   const currentQuestion = QUESTIONS[currentQuestionIdx];
   const matchmakerProgress = ((currentQuestionIdx + 1) / QUESTIONS.length) * 100;
@@ -90,6 +92,53 @@ export const RegistrationFlow = () => {
     const answer = answers[currentQuestionIdx];
     return Array.isArray(answer) ? answer.includes(optionId) : answer === optionId;
   };
+
+  if (REGISTRATION_CLOSED) {
+    return (
+      <section id="registration-flow" className="py-24 px-6 lg:px-12 xl:px-24 bg-white min-h-[60vh] flex items-center justify-center">
+        <div className="max-w-3xl w-full mx-auto">
+          {/* Fixed Framer Motion type error by casting props to any */}
+          <motion.div 
+            {...({
+              initial: { opacity: 0, y: 20 },
+              animate: { opacity: 1, y: 0 },
+              transition: { duration: 0.6 }
+            } as any)}
+            className="bg-white rounded-[2.5rem] p-12 lg:p-16 text-center card-shadow border border-slate-100 relative overflow-hidden"
+          >
+            {/* Decorative background elements */}
+            <div className="absolute top-0 right-0 w-64 h-64 bg-slate-50 rounded-full -mr-32 -mt-32 z-0 opacity-50" />
+            <div className="absolute bottom-0 left-0 w-48 h-48 bg-slate-50 rounded-full -ml-24 -mb-24 z-0 opacity-50" />
+            
+            <div className="relative z-10 flex flex-col items-center">
+              <div className="w-24 h-24 bg-slate-50 text-slate-400 rounded-full flex items-center justify-center mb-8 shadow-inner border border-slate-100">
+                <CalendarOff size={40} />
+              </div>
+              
+              <h2 className="text-3xl lg:text-5xl font-black text-[#000080] mb-6 tracking-tight">Registration Closed</h2>
+              
+              <p className="text-lg lg:text-xl text-slate-500 font-medium mb-10 max-w-lg leading-relaxed">
+                The registration period for Sailors Open 2026 has officially ended. We are currently finalizing the brackets and schedules.
+              </p>
+              
+              <div className="p-8 bg-[#4c8bf5]/5 rounded-3xl border border-[#4c8bf5]/10 max-w-md w-full backdrop-blur-sm">
+                  <div className="flex items-center justify-center gap-3 text-[#4c8bf5] font-bold mb-3 uppercase tracking-wider text-xs">
+                    <Clock size={16} />
+                    <span>Next Update</span>
+                  </div>
+                  <p className="text-[#000080] font-black text-2xl mb-1">Match Schedules Release</p>
+                  <p className="text-slate-400 text-sm font-bold">January 20, 2026</p>
+              </div>
+
+              <p className="mt-10 text-slate-400 text-sm font-medium">
+                Missed the registration? <a href="#contact-section" className="text-[#4c8bf5] hover:underline font-bold">Contact your local committee</a>
+              </p>
+            </div>
+          </motion.div>
+        </div>
+      </section>
+    );
+  }
 
   return (
     <section id="registration-flow" className="py-24 px-6 lg:px-12 xl:px-24 bg-white min-h-screen flex items-center justify-center">
