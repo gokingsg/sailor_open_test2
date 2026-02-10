@@ -125,50 +125,50 @@ export const CONTACT_DATA: ContactEntry[] = [
 export const MATCH_HISTORY_DATA: MatchRecord[] = [
   {
     id: "m4",
-    leagueName: "Sailors Singles Flex League",
+    leagueName: "City League",
     season: "December - February 2025/26",
     market: "Singapore",
     city: "Singapore",
     date: "JAN 12, 2026",
     time: "7:00 PM",
     status: "Completed",
-    player1: { name: "Arran Kenna", isWinner: false, scores: [3, 4] },
-    player2: { name: "David Chen", isWinner: true, scores: [6, 6] }
+    player1: { name: "Arran Kenna", isWinner: false, scores: [4] },
+    player2: { name: "David Chen", isWinner: true, scores: [6] }
   },
   {
     id: "m1",
-    leagueName: "Sailors Singles Flex League",
+    leagueName: "City League",
     season: "December - February 2025/26",
     market: "Singapore",
     city: "Singapore",
     date: "JAN 10, 2026",
     time: "3:00 PM",
     status: "Completed",
-    player1: { name: "Ethan Harker", isWinner: false, scores: [1, 5] },
-    player2: { name: "Arran Kenna", isWinner: true, scores: [6, 7] }
+    player1: { name: "Ethan Harker", isWinner: false, scores: [5] },
+    player2: { name: "Arran Kenna", isWinner: true, scores: [7] }
   },
   {
     id: "m2",
-    leagueName: "Sailors Singles Flex League",
+    leagueName: "City League",
     season: "December - February 2025/26",
     market: "Singapore",
     city: "Singapore",
     date: "JAN 4, 2026",
     time: "6:00 PM",
     status: "Walkover",
-    player1: { name: "Clyde Densel Duran", isWinner: false, scores: ["-", "-", "-"] },
-    player2: { name: "Arran Kenna", isWinner: true, scores: ["-", "-", "-"] }
+    player1: { name: "Clyde Densel Duran", isWinner: false, scores: ["-"] },
+    player2: { name: "Arran Kenna", isWinner: true, scores: ["-"] }
   },
   {
     id: "m3",
-    leagueName: "Sailors Singles Flex League",
+    leagueName: "City League",
     season: "December - February 2025/26",
     market: "Singapore",
     city: "Singapore",
     date: "JAN 4, 2026",
     time: "4:00 PM",
     status: "Completed",
-    player1: { name: "Arran Kenna", isWinner: true, scores: [4, 6, 6] },
-    player2: { name: "Simon Swenson", isWinner: false, scores: [6, 3, 4] }
+    player1: { name: "Arran Kenna", isWinner: true, scores: [6] },
+    player2: { name: "Simon Swenson", isWinner: false, scores: [4] }
   }
 ];
