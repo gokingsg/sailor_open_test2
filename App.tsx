@@ -16,9 +16,18 @@ import { Footer } from './components/Footer';
 export default function App() {
   const [activeView, setActiveView] = useState<'home' | 'history' | 'leaderboard' | 'registration' | 'test'>('home');
   const [selectedPlayer, setSelectedPlayer] = useState<string | null>(null);
+  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
 
   const handleNavigate = (view: 'home' | 'history' | 'leaderboard' | 'registration' | 'test') => {
     setActiveView(view);
+    
+    // Auto-collapse logic for data-heavy views
+    if (view === 'history' || view === 'leaderboard' || view === 'registration') {
+      setIsSidebarCollapsed(true);
+    } else {
+      setIsSidebarCollapsed(false);
+    }
+
     // If navigating to history explicitly via menu, clear selected player (show own history)
     // If navigating to other pages, clear it as well.
     // The only time we keep it is if we are navigating FROM leaderboard TO history via click
@@ -35,15 +44,23 @@ export default function App() {
   const handlePlayerClick = (playerName: string) => {
     setSelectedPlayer(playerName);
     setActiveView('history');
+    setIsSidebarCollapsed(true); // Ensure collapsed when drilling down
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   return (
     <main className="min-h-screen bg-white flex flex-col lg:flex-row relative">
-      <Sidebar activeView={activeView} onNavigate={handleNavigate} />
+      <Sidebar 
+        activeView={activeView} 
+        onNavigate={handleNavigate} 
+        isCollapsed={isSidebarCollapsed}
+        onToggle={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
+      />
       <MobileNav activeView={activeView} onNavigate={handleNavigate} />
       
-      <div className="flex-1 lg:ml-[300px] xl:ml-[340px] relative min-h-screen flex flex-col pt-32 lg:pt-0">
+      <div className={`flex-1 relative min-h-screen flex flex-col pt-32 lg:pt-0 transition-all duration-300 ${
+        isSidebarCollapsed ? 'lg:ml-[100px]' : 'lg:ml-[300px] xl:ml-[340px]'
+      }`}>
         <TopHeader onNavigate={handleNavigate} />
         
         {activeView === 'home' ? (
