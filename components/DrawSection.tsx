@@ -1,7 +1,8 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
-import { CheckCircle, GitBranch, MapPin, Trophy, X } from 'lucide-react';
-import { DrawCompetitor, DrawMatch, DrawRound } from '../types';
+import { CheckCircle, ChevronDown, Filter, GitBranch, MapPin, Trophy, X } from 'lucide-react';
+import { DRAW_CATEGORY_OPTIONS, DRAW_MARKET_OPTIONS } from '../constants';
+import { DrawCategoryId, DrawCompetitor, DrawMarketId, DrawMatch, DrawRound } from '../types';
 import { buildDrawBracket, DRAW_RESULTS_UPDATED_EVENT, loadDrawResults } from '../utils/drawBracket';
 
 const ROW_HEIGHT = 96;
@@ -223,9 +224,13 @@ const ChampionCell = ({
 
 const DrawMatchModal = ({
   selection,
+  marketLabel,
+  categoryLabel,
   onClose
 }: {
   selection: SelectedDrawMatch;
+  marketLabel: string;
+  categoryLabel: string;
   onClose: () => void;
 }) => {
   const { match, roundLabel, focusPlayerName } = selection;
@@ -267,7 +272,7 @@ const DrawMatchModal = ({
           <h3 className="text-xl font-black text-[#000080]">{roundLabel}</h3>
           <p className="mt-2 flex items-center gap-1 text-xs font-bold text-[#000080]/60">
             <MapPin size={12} />
-            Sailors Open 2026, Singapore
+            {marketLabel} · {categoryLabel}
           </p>
         </div>
 
@@ -322,11 +327,15 @@ const DrawMatchModal = ({
 };
 
 export const DrawSection = () => {
-  const [drawResults, setDrawResults] = useState(() => loadDrawResults());
+  const [activeMarket, setActiveMarket] = useState<DrawMarketId>('globalFinals');
+  const [activeCategory, setActiveCategory] = useState<DrawCategoryId>('men');
+  const [drawResults, setDrawResults] = useState(() => loadDrawResults('globalFinals', 'men'));
   const [selectedMatch, setSelectedMatch] = useState<SelectedDrawMatch | null>(null);
+  const activeMarketOption = DRAW_MARKET_OPTIONS.find((market) => market.id === activeMarket) || DRAW_MARKET_OPTIONS[0];
+  const activeCategoryOption = DRAW_CATEGORY_OPTIONS.find((category) => category.id === activeCategory) || DRAW_CATEGORY_OPTIONS[0];
 
   useEffect(() => {
-    const syncDrawResults = () => setDrawResults(loadDrawResults());
+    const syncDrawResults = () => setDrawResults(loadDrawResults(activeMarket, activeCategory));
 
     window.addEventListener(DRAW_RESULTS_UPDATED_EVENT, syncDrawResults);
     window.addEventListener('storage', syncDrawResults);
@@ -334,13 +343,25 @@ export const DrawSection = () => {
       window.removeEventListener(DRAW_RESULTS_UPDATED_EVENT, syncDrawResults);
       window.removeEventListener('storage', syncDrawResults);
     };
-  }, []);
+  }, [activeMarket, activeCategory]);
 
-  const rounds = useMemo(() => buildDrawBracket(drawResults), [drawResults]);
+  const handleMarketChange = (marketId: DrawMarketId) => {
+    setActiveMarket(marketId);
+    setDrawResults(loadDrawResults(marketId, activeCategory));
+    setSelectedMatch(null);
+  };
+
+  const handleCategoryChange = (categoryId: DrawCategoryId) => {
+    setActiveCategory(categoryId);
+    setDrawResults(loadDrawResults(activeMarket, categoryId));
+    setSelectedMatch(null);
+  };
+
+  const rounds = useMemo(() => buildDrawBracket(activeMarket, activeCategory, drawResults), [activeMarket, activeCategory, drawResults]);
   const [last32Round, last16Round, quarterFinalRound, semiFinalRound, finalRound] = rounds;
 
   return (
-    <section className="relative px-4 lg:px-6 xl:px-8 py-12 lg:py-20 bg-slate-50 min-h-screen">
+    <section className="relative min-h-screen overflow-x-hidden bg-white px-6 py-16 lg:px-12 lg:py-24 xl:px-24">
       <motion.div
         {...({
           initial: { opacity: 0, y: 10 },
@@ -349,32 +370,76 @@ export const DrawSection = () => {
         } as any)}
         className="w-full mx-auto"
       >
-        <header className="mb-10">
-          <div className="flex items-center gap-2 text-[#4c8bf5] font-black uppercase tracking-[0.25em] text-xs mb-4">
-            <GitBranch size={16} />
-            Last 32 Bracket
+        <header className="mb-12">
+          <div className="flex flex-col gap-6 2xl:flex-row 2xl:items-end 2xl:justify-between">
+            <div className="min-w-0">
+              <h1 className="text-3xl lg:text-7xl font-black text-[#000080] leading-tight uppercase mb-4">
+                Tournament Draw
+              </h1>
+              <p className="flex items-center gap-2 text-slate-400 font-black uppercase tracking-[0.16em] text-xs lg:text-sm">
+                <Filter size={14} className="text-[#4c8bf5]" />
+                Filter by market & category
+              </p>
+            </div>
+
+            <div className="grid w-full gap-4 sm:grid-cols-2 2xl:w-auto">
+              <div>
+                <label className="block mb-2 text-[10px] font-black uppercase text-[#000080] tracking-wider">Market</label>
+                <div className="relative">
+                  <select
+                    value={activeMarket}
+                    onChange={(event) => handleMarketChange(event.target.value as DrawMarketId)}
+                    className="w-full 2xl:w-56 px-4 py-3 bg-slate-50 border border-slate-100 rounded-xl appearance-none focus:ring-2 focus:ring-[#4c8bf5] outline-none font-bold text-[#000080] text-sm cursor-pointer hover:bg-slate-100 transition-colors"
+                  >
+                    {DRAW_MARKET_OPTIONS.map((market) => (
+                      <option key={market.id} value={market.id}>{market.label}</option>
+                    ))}
+                  </select>
+                  <ChevronDown size={16} className="absolute right-4 top-1/2 -translate-y-1/2 text-[#4c8bf5] pointer-events-none" />
+                </div>
+              </div>
+
+              <div>
+                <label className="block mb-2 text-[10px] font-black uppercase text-[#000080] tracking-wider">Category</label>
+                <div className="relative">
+                  <select
+                    value={activeCategory}
+                    onChange={(event) => handleCategoryChange(event.target.value as DrawCategoryId)}
+                    className="w-full 2xl:w-56 px-4 py-3 bg-slate-50 border border-slate-100 rounded-xl appearance-none focus:ring-2 focus:ring-[#4c8bf5] outline-none font-bold text-[#000080] text-sm cursor-pointer hover:bg-slate-100 transition-colors"
+                  >
+                    {DRAW_CATEGORY_OPTIONS.map((category) => (
+                      <option key={category.id} value={category.id}>{category.label}</option>
+                    ))}
+                  </select>
+                  <ChevronDown size={16} className="absolute right-4 top-1/2 -translate-y-1/2 text-[#4c8bf5] pointer-events-none" />
+                </div>
+              </div>
+            </div>
           </div>
-          <h1 className="text-3xl lg:text-6xl font-black text-[#000080] leading-tight uppercase mb-4">
-            Tournament Draw
-          </h1>
-          <p className="max-w-3xl text-slate-500 font-medium leading-relaxed">
-            A compact bracket table with mock scores, winners, and connected advancement paths.
-          </p>
+
+          <div className="mt-8 flex flex-wrap items-center gap-3">
+            <div className="px-4 py-1.5 bg-[#000080] text-white rounded-full text-[11px] font-black uppercase tracking-wider">
+              {activeMarketOption.label}
+            </div>
+            <div className="px-4 py-1.5 bg-slate-200 text-slate-600 rounded-full text-[11px] font-black uppercase tracking-wider">
+              {activeCategoryOption.label}
+            </div>
+          </div>
         </header>
 
         <div className="overflow-hidden rounded-[2rem] border border-slate-100 bg-white shadow-xl shadow-slate-200/50">
           <div className="px-6 lg:px-8 py-5 bg-[#000080] text-white flex flex-col md:flex-row md:items-center justify-between gap-3">
             <div>
-              <div className="text-[10px] font-black text-[#4c8bf5] uppercase tracking-[0.25em] mb-1">Sailors Open 2026</div>
-              <h2 className="text-xl lg:text-2xl font-black uppercase">Last 32 to Grand Winner</h2>
+              <div className="text-[10px] font-black text-[#4c8bf5] uppercase tracking-[0.25em] mb-1">{activeMarketOption.label}</div>
+              <h2 className="text-xl lg:text-2xl font-black uppercase">{activeCategoryOption.label}: Last 32 to Grand Winner</h2>
             </div>
             <div className="flex items-center gap-2 text-xs font-black uppercase tracking-widest text-white/80">
               <Trophy size={16} className="text-[#4c8bf5]" />
-              Mock match results
+              Draw match results
             </div>
           </div>
 
-          <div className="overflow-x-auto bg-slate-100/70 p-4">
+          <div className="overflow-x-auto bg-white p-4">
             <table className="w-full min-w-[1500px] table-fixed border-collapse text-left">
               <colgroup>
                 <col className="w-[18%]" />
@@ -433,7 +498,7 @@ export const DrawSection = () => {
 
       <AnimatePresence>
         {selectedMatch && (
-          <DrawMatchModal selection={selectedMatch} onClose={() => setSelectedMatch(null)} />
+          <DrawMatchModal selection={selectedMatch} marketLabel={activeMarketOption.label} categoryLabel={activeCategoryOption.label} onClose={() => setSelectedMatch(null)} />
         )}
       </AnimatePresence>
     </section>

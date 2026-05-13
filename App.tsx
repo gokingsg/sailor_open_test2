@@ -51,7 +51,7 @@ export default function App() {
   };
 
   return (
-    <main className="min-h-screen bg-white flex flex-col lg:flex-row relative">
+    <main className="min-h-screen bg-white flex flex-col lg:flex-row relative overflow-x-hidden">
       <Sidebar 
         activeView={activeView} 
         onNavigate={handleNavigate} 
@@ -60,7 +60,7 @@ export default function App() {
       />
       <MobileNav activeView={activeView} onNavigate={handleNavigate} />
       
-      <div className={`flex-1 relative min-h-screen flex flex-col pt-32 lg:pt-0 transition-all duration-300 ${
+      <div className={`flex-1 relative min-h-screen flex flex-col overflow-x-hidden pt-32 lg:pt-0 transition-all duration-300 ${
         isSidebarCollapsed ? 'lg:ml-[100px]' : 'lg:ml-[300px] xl:ml-[340px]'
       }`}>
         <TopHeader onNavigate={handleNavigate} />

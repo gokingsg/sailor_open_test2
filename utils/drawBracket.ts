@@ -1,8 +1,11 @@
-import { DEFAULT_DRAW_RESULTS, DRAW_BRACKET_ROUNDS } from '../constants';
-import { DrawCompetitor, DrawMatch, DrawMatchResult, DrawRound, DrawRoundId } from '../types';
+import { DEFAULT_DRAW_RESULTS, DRAW_BRACKET_ROUNDS_BY_MARKET } from '../constants';
+import { DrawCategoryId, DrawCompetitor, DrawMarketId, DrawMatch, DrawMatchResult, DrawRound, DrawRoundId } from '../types';
 
 export const DRAW_RESULTS_STORAGE_KEY = 'sailors-open-draw-results';
 export const DRAW_RESULTS_UPDATED_EVENT = 'sailors-open-draw-results-updated';
+
+const DEFAULT_CATEGORY_ID: DrawCategoryId = 'men';
+const DEFAULT_MARKET_ID: DrawMarketId = 'globalFinals';
 
 const ROUND_LABELS: Record<DrawRoundId, string> = {
   last32: 'Last 32',
@@ -48,6 +51,34 @@ const resultMatchesPlayers = (match: DrawMatch, result: DrawMatchResult) => (
   result.p1Name === match.players[0].name && result.p2Name === match.players[1].name
 );
 
+const normalizeDrawResult = (result: DrawMatchResult): DrawMatchResult => {
+  const marketId = result.marketId || DEFAULT_MARKET_ID;
+  const categoryId = result.categoryId || DEFAULT_CATEGORY_ID;
+  return {
+    ...result,
+    marketId,
+    categoryId,
+    id: result.id || `draw-${marketId}-${categoryId}-${result.matchId}`
+  };
+};
+
+const normalizeDrawResults = (results: DrawMatchResult[]) => (
+  results.map((result) => normalizeDrawResult(result))
+);
+
+const getMarketBaseRounds = (marketId: DrawMarketId, categoryId: DrawCategoryId) => (
+  DRAW_BRACKET_ROUNDS_BY_MARKET[marketId]?.[categoryId] ||
+  DRAW_BRACKET_ROUNDS_BY_MARKET[DEFAULT_MARKET_ID][DEFAULT_CATEGORY_ID]
+);
+
+const getScopedResults = (
+  results: DrawMatchResult[],
+  marketId: DrawMarketId,
+  categoryId: DrawCategoryId
+) => (
+  normalizeDrawResults(results).filter((result) => result.marketId === marketId && result.categoryId === categoryId)
+);
+
 const applyResult = (match: DrawMatch, result?: DrawMatchResult): DrawMatch => {
   if (!result || !resultMatchesPlayers(match, result)) return match;
 
@@ -83,11 +114,17 @@ const getPlaceholderName = (roundId: DrawRoundId) => {
   return 'Winner TBD';
 };
 
-export const buildDrawBracket = (results: DrawMatchResult[] = DEFAULT_DRAW_RESULTS): DrawRound[] => {
-  const resultByMatch = new Map(results.map((result) => [result.matchId, result]));
+export const buildDrawBracket = (
+  marketId: DrawMarketId = DEFAULT_MARKET_ID,
+  categoryId: DrawCategoryId = DEFAULT_CATEGORY_ID,
+  results: DrawMatchResult[] = DEFAULT_DRAW_RESULTS
+): DrawRound[] => {
+  const scopedResults = getScopedResults(results, marketId, categoryId);
+  const resultByMatch = new Map(scopedResults.map((result) => [result.matchId, result]));
+  const baseRounds = getMarketBaseRounds(marketId, categoryId);
   const rounds: DrawRound[] = [];
 
-  const last32Matches = DRAW_BRACKET_ROUNDS[0].matches.map((match) => {
+  const last32Matches = baseRounds[0].matches.map((match) => {
     const seededMatch: DrawMatch = {
       ...match,
       players: [
@@ -135,37 +172,61 @@ export const getFlatDrawMatches = (rounds: DrawRound[]) => (
   rounds.flatMap((round) => round.matches.map((match) => ({ round, match })))
 );
 
-export const sanitizeDrawResults = (results: DrawMatchResult[]) => {
-  const rounds = buildDrawBracket(results);
-  const validMatches = new Map(
-    getFlatDrawMatches(rounds).map(({ match }) => [match.id, match])
+export const sanitizeDrawResults = (results: DrawMatchResult[]) => (
+  (Object.keys(DRAW_BRACKET_ROUNDS_BY_MARKET) as DrawMarketId[]).flatMap((marketId) => (
+    (Object.keys(DRAW_BRACKET_ROUNDS_BY_MARKET[marketId]) as DrawCategoryId[]).flatMap((categoryId) => {
+      const scopedResults = getScopedResults(results, marketId, categoryId);
+      const rounds = buildDrawBracket(marketId, categoryId, scopedResults);
+      const validMatches = new Map(
+        getFlatDrawMatches(rounds).map(({ match }) => [match.id, match])
+      );
+
+      return scopedResults.filter((result) => {
+        const match = validMatches.get(result.matchId);
+        return Boolean(match && resultMatchesPlayers(match, result));
+      });
+    })
+  ))
+);
+
+export const loadDrawResults = (marketId?: DrawMarketId, categoryId?: DrawCategoryId): DrawMatchResult[] => {
+  const getMaybeScopedResults = (results: DrawMatchResult[]) => (
+    marketId && categoryId ? getScopedResults(results, marketId, categoryId) : normalizeDrawResults(results)
   );
 
-  return results.filter((result) => {
-    const match = validMatches.get(result.matchId);
-    return Boolean(match && resultMatchesPlayers(match, result));
-  });
-};
-
-export const loadDrawResults = (): DrawMatchResult[] => {
-  if (typeof window === 'undefined') return DEFAULT_DRAW_RESULTS;
+  if (typeof window === 'undefined') {
+    return getMaybeScopedResults(DEFAULT_DRAW_RESULTS);
+  }
 
   const stored = window.localStorage.getItem(DRAW_RESULTS_STORAGE_KEY);
-  if (!stored) return DEFAULT_DRAW_RESULTS;
+  if (!stored) {
+    return getMaybeScopedResults(DEFAULT_DRAW_RESULTS);
+  }
 
   try {
     const parsed = JSON.parse(stored) as DrawMatchResult[];
-    return sanitizeDrawResults(parsed);
+    const sanitized = sanitizeDrawResults(parsed);
+    return getMaybeScopedResults(sanitized);
   } catch {
-    return DEFAULT_DRAW_RESULTS;
+    return getMaybeScopedResults(DEFAULT_DRAW_RESULTS);
   }
 };
 
-export const saveDrawResults = (results: DrawMatchResult[]) => {
+export const saveDrawResults = (
+  results: DrawMatchResult[],
+  marketId?: DrawMarketId,
+  categoryId?: DrawCategoryId
+) => {
   if (typeof window === 'undefined') return;
 
-  const sanitized = sanitizeDrawResults(results);
-  window.localStorage.setItem(DRAW_RESULTS_STORAGE_KEY, JSON.stringify(sanitized));
-  window.dispatchEvent(new CustomEvent(DRAW_RESULTS_UPDATED_EVENT));
-};
+  const nextResults = marketId && categoryId
+    ? [
+      ...loadDrawResults().filter((result) => !(result.marketId === marketId && result.categoryId === categoryId)),
+      ...results.map((result) => ({ ...result, marketId, categoryId }))
+    ]
+    : results;
+  const sanitized = sanitizeDrawResults(nextResults);
 
+  window.localStorage.setItem(DRAW_RESULTS_STORAGE_KEY, JSON.stringify(sanitized));
+  window.dispatchEvent(new CustomEvent(DRAW_RESULTS_UPDATED_EVENT, { detail: { marketId, categoryId } }));
+};

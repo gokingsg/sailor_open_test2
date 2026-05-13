@@ -1,9 +1,9 @@
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Plus, Edit2, Trash2, X, Upload, FileCheck, Save, Calendar, Clock, MapPin, ToggleLeft, ToggleRight, Minus, ChevronDown, CheckCircle, Trophy, GitBranch, ClipboardList } from 'lucide-react';
 import { EmptyState } from './EmptyState';
-import { LOCATIONS } from '../constants';
-import { DrawMatch, DrawMatchResult, DrawRound } from '../types';
+import { DRAW_CATEGORY_OPTIONS, DRAW_MARKET_OPTIONS, LOCATIONS } from '../constants';
+import { DrawCategoryId, DrawMarketId, DrawMatch, DrawMatchResult, DrawRound } from '../types';
 import { buildDrawBracket, getFlatDrawMatches, isDrawMatchComplete, isDrawMatchReady, loadDrawResults, saveDrawResults } from '../utils/drawBracket';
 
 export interface ScoreSet {
@@ -133,10 +133,19 @@ export const ScoreRegistrationSection = ({ initialData, titleOverride }: ScoreRe
 
   // Derived state for winner selection in UI
   const [winnerSide, setWinnerSide] = useState<'p1' | 'p2'>('p1');
-  const [drawResults, setDrawResults] = useState<DrawMatchResult[]>(() => loadDrawResults());
+  const [activeDrawMarket, setActiveDrawMarket] = useState<DrawMarketId>('globalFinals');
+  const [activeDrawCategory, setActiveDrawCategory] = useState<DrawCategoryId>('men');
+  const [drawResults, setDrawResults] = useState<DrawMatchResult[]>(() => loadDrawResults('globalFinals', 'men'));
   const [drawDrafts, setDrawDrafts] = useState<Record<string, DrawResultDraft>>({});
 
-  const drawRounds = useMemo(() => buildDrawBracket(drawResults), [drawResults]);
+  useEffect(() => {
+    setDrawResults(loadDrawResults(activeDrawMarket, activeDrawCategory));
+    setDrawDrafts({});
+  }, [activeDrawMarket, activeDrawCategory]);
+
+  const activeDrawMarketLabel = DRAW_MARKET_OPTIONS.find((market) => market.id === activeDrawMarket)?.label || 'Global Finals';
+  const activeDrawCategoryLabel = DRAW_CATEGORY_OPTIONS.find((category) => category.id === activeDrawCategory)?.label || "Men's Singles";
+  const drawRounds = useMemo(() => buildDrawBracket(activeDrawMarket, activeDrawCategory, drawResults), [activeDrawMarket, activeDrawCategory, drawResults]);
   const flatDrawMatches = useMemo(() => getFlatDrawMatches(drawRounds), [drawRounds]);
 
   const getDrawResultForMatch = (match: DrawMatch) => (
@@ -148,8 +157,8 @@ export const ScoreRegistrationSection = ({ initialData, titleOverride }: ScoreRe
   );
 
   const syncDrawResults = (nextResults: DrawMatchResult[], savedMatchIds: string[] = []) => {
-    saveDrawResults(nextResults);
-    setDrawResults(loadDrawResults());
+    saveDrawResults(nextResults, activeDrawMarket, activeDrawCategory);
+    setDrawResults(loadDrawResults(activeDrawMarket, activeDrawCategory));
     if (savedMatchIds.length > 0) {
       setDrawDrafts((prev) => {
         const nextDrafts = { ...prev };
@@ -207,7 +216,9 @@ export const ScoreRegistrationSection = ({ initialData, titleOverride }: ScoreRe
     match: DrawMatch,
     draft: DrawResultDraft
   ): DrawMatchResult => ({
-    id: getDrawResultForMatch(match)?.id || `draw-${match.id}`,
+    id: getDrawResultForMatch(match)?.id || `draw-${activeDrawMarket}-${activeDrawCategory}-${match.id}`,
+    marketId: activeDrawMarket,
+    categoryId: activeDrawCategory,
     matchId: match.id,
     roundId: round.id,
     matchLabel: match.label,
@@ -523,7 +534,48 @@ export const ScoreRegistrationSection = ({ initialData, titleOverride }: ScoreRe
             <div className="flex flex-col gap-4 xl:flex-row xl:items-center xl:justify-between">
               <div>
                 <h2 className="text-lg font-black uppercase tracking-tight text-[#000080]">Draw Result Management</h2>
-                <p className="text-sm font-medium text-slate-500">Edit bracket results inline by round. Winners unlock the next round automatically.</p>
+                <p className="text-sm font-medium text-slate-500">Edit {activeDrawMarketLabel} · {activeDrawCategoryLabel} bracket results inline by round. Winners unlock the next round automatically.</p>
+                <div className="mt-4 grid max-w-xl gap-4 sm:grid-cols-2">
+                  <div>
+                    <label className="block mb-2 text-[10px] font-black uppercase text-[#000080] tracking-wider">Market</label>
+                    <div className="relative">
+                      <select
+                        value={activeDrawMarket}
+                        onChange={(event) => setActiveDrawMarket(event.target.value as DrawMarketId)}
+                        className="w-full px-4 py-3 bg-white border border-slate-100 rounded-xl appearance-none focus:ring-2 focus:ring-[#4c8bf5] outline-none font-bold text-[#000080] text-sm cursor-pointer hover:bg-slate-50 transition-colors"
+                      >
+                        {DRAW_MARKET_OPTIONS.map((market) => (
+                          <option key={market.id} value={market.id}>{market.label}</option>
+                        ))}
+                      </select>
+                      <ChevronDown size={16} className="absolute right-4 top-1/2 -translate-y-1/2 text-[#4c8bf5] pointer-events-none" />
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block mb-2 text-[10px] font-black uppercase text-[#000080] tracking-wider">Category</label>
+                    <div className="relative">
+                      <select
+                        value={activeDrawCategory}
+                        onChange={(event) => setActiveDrawCategory(event.target.value as DrawCategoryId)}
+                        className="w-full px-4 py-3 bg-white border border-slate-100 rounded-xl appearance-none focus:ring-2 focus:ring-[#4c8bf5] outline-none font-bold text-[#000080] text-sm cursor-pointer hover:bg-slate-50 transition-colors"
+                      >
+                        {DRAW_CATEGORY_OPTIONS.map((category) => (
+                          <option key={category.id} value={category.id}>{category.label}</option>
+                        ))}
+                      </select>
+                      <ChevronDown size={16} className="absolute right-4 top-1/2 -translate-y-1/2 text-[#4c8bf5] pointer-events-none" />
+                    </div>
+                  </div>
+                </div>
+                <div className="mt-4 flex flex-wrap items-center gap-3">
+                  <div className="px-4 py-1.5 bg-[#000080] text-white rounded-full text-[11px] font-black uppercase tracking-wider">
+                    {activeDrawMarketLabel}
+                  </div>
+                  <div className="px-4 py-1.5 bg-slate-200 text-slate-600 rounded-full text-[11px] font-black uppercase tracking-wider">
+                    {activeDrawCategoryLabel}
+                  </div>
+                </div>
               </div>
               <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
                 <div className="rounded-xl bg-white px-4 py-2 text-center">

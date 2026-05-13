@@ -127,6 +127,19 @@ export interface DrawCompetitor {
 }
 
 export type DrawRoundId = 'last32' | 'last16' | 'quarterFinal' | 'semiFinal' | 'final';
+export type DrawCategoryId = 'men' | 'women';
+export type DrawMarketId = 'globalFinals';
+
+export interface DrawCategoryOption {
+  id: DrawCategoryId;
+  label: string;
+  shortLabel: string;
+}
+
+export interface DrawMarketOption {
+  id: DrawMarketId;
+  label: string;
+}
 
 export interface DrawMatch {
   id: string;
@@ -142,6 +155,8 @@ export interface DrawRound {
 
 export interface DrawMatchResult {
   id: string;
+  marketId: DrawMarketId;
+  categoryId: DrawCategoryId;
   matchId: string;
   roundId: DrawRoundId;
   matchLabel: string;

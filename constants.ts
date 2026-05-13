@@ -1,5 +1,5 @@
 
-import { MatchmakerQuestion, LeaderboardEntry, PrizeEntry, ContactEntry, MatchRecord, DrawQuarter, DrawFinals, DrawRound, DrawMatchResult, DrawRoundId } from './types';
+import { MatchmakerQuestion, LeaderboardEntry, PrizeEntry, ContactEntry, MatchRecord, DrawQuarter, DrawFinals, DrawRound, DrawMatchResult, DrawRoundId, DrawCategoryId, DrawCategoryOption, DrawMarketId, DrawMarketOption } from './types';
 
 export const ASSETS = {
   logo: "/logo.png",
@@ -10,6 +10,15 @@ export const ASSETS = {
 export const CATEGORIES = [
   "Men's Singles",
   "Women's Singles"
+];
+
+export const DRAW_CATEGORY_OPTIONS: DrawCategoryOption[] = [
+  { id: 'men', label: "Men's Singles", shortLabel: 'Men' },
+  { id: 'women', label: "Women's Singles", shortLabel: 'Women' }
+];
+
+export const DRAW_MARKET_OPTIONS: DrawMarketOption[] = [
+  { id: 'globalFinals', label: 'Global Finals' }
 ];
 
 export const LOCATIONS: Record<string, string[]> = {
@@ -325,23 +334,76 @@ export const DRAW_BRACKET_ROUNDS: DrawRound[] = [
   }
 ];
 
-export const DEFAULT_DRAW_RESULTS: DrawMatchResult[] = DRAW_BRACKET_ROUNDS.flatMap((round) => (
-  round.matches.flatMap((match) => {
-    const winnerIndex = match.players.findIndex((player) => player.isWinner);
-    if (winnerIndex === -1) return [];
+const WOMEN_DRAW_LAST32: Array<[[string, number], [string, number]]> = [
+  [["Maya Tan", 1], ["Priya Nair", 32]],
+  [["Sofia Lim", 16], ["Clara Ho", 17]],
+  [["Lina Chen", 8], ["Anika Rao", 25]],
+  [["Mei Wong", 9], ["Rina Santos", 24]],
+  [["Alyssa Lee", 4], ["Nadia Park", 29]],
+  [["Hana Kim", 13], ["Grace Silva", 20]],
+  [["Isabella Costa", 5], ["Trang Nguyen", 28]],
+  [["Yuki Sato", 12], ["Elena Garcia", 21]],
+  [["Rachel Goh", 2], ["Jasmine Mehta", 31]],
+  [["Michelle Chua", 15], ["Thao Tran", 18]],
+  [["Valerie Ng", 7], ["Camila Mendes", 26]],
+  [["Olivia Ho", 10], ["Nina Wilson", 23]],
+  [["Chloe Tanaka", 3], ["Diana Krit", 30]],
+  [["Bianca Lau", 14], ["Min Lee", 19]],
+  [["Emma Felix", 6], ["Sara Minh", 27]],
+  [["Victoria Petrov", 11], ["Lily Arthur", 22]]
+];
 
-    return [{
-      id: `draw-${match.id}`,
-      matchId: match.id,
-      roundId: round.id as DrawRoundId,
-      matchLabel: match.label,
-      p1Name: match.players[0].name,
-      p2Name: match.players[1].name,
-      p1Score: match.players[0].score,
-      p2Score: match.players[1].score,
-      winnerIndex: winnerIndex as 0 | 1,
-      proofFile: null,
-      updatedAt: '2026-05-13T00:00:00.000Z'
-    }];
-  })
+const createPendingLast32Round = (
+  matches: Array<[[string, number], [string, number]]>
+): DrawRound => ({
+  id: "last32",
+  label: "Last 32",
+  matches: matches.map(([player1, player2], index) => ({
+    id: `r32-${index + 1}`,
+    label: `Match ${index + 1}`,
+    players: [
+      { name: player1[0], seed: player1[1], score: "—", isWinner: false },
+      { name: player2[0], seed: player2[1], score: "—", isWinner: false }
+    ]
+  }))
+});
+
+export const WOMEN_DRAW_BRACKET_ROUNDS: DrawRound[] = [
+  createPendingLast32Round(WOMEN_DRAW_LAST32)
+];
+
+export const DRAW_BRACKET_ROUNDS_BY_CATEGORY: Record<DrawCategoryId, DrawRound[]> = {
+  men: DRAW_BRACKET_ROUNDS,
+  women: WOMEN_DRAW_BRACKET_ROUNDS
+};
+
+export const DRAW_BRACKET_ROUNDS_BY_MARKET: Record<DrawMarketId, Record<DrawCategoryId, DrawRound[]>> = {
+  globalFinals: DRAW_BRACKET_ROUNDS_BY_CATEGORY
+};
+
+export const DEFAULT_DRAW_RESULTS: DrawMatchResult[] = DRAW_MARKET_OPTIONS.flatMap((market) => (
+  DRAW_CATEGORY_OPTIONS.flatMap((category) => (
+    DRAW_BRACKET_ROUNDS_BY_MARKET[market.id][category.id].flatMap((round) => (
+      round.matches.flatMap((match) => {
+        const winnerIndex = match.players.findIndex((player) => player.isWinner);
+        if (winnerIndex === -1) return [];
+
+        return [{
+          id: `draw-${market.id}-${category.id}-${match.id}`,
+          marketId: market.id,
+          categoryId: category.id,
+          matchId: match.id,
+          roundId: round.id as DrawRoundId,
+          matchLabel: match.label,
+          p1Name: match.players[0].name,
+          p2Name: match.players[1].name,
+          p1Score: match.players[0].score,
+          p2Score: match.players[1].score,
+          winnerIndex: winnerIndex as 0 | 1,
+          proofFile: null,
+          updatedAt: '2026-05-13T00:00:00.000Z'
+        }];
+      })
+    ))
+  ))
 ));
