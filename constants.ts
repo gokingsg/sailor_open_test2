@@ -1,5 +1,5 @@
 
-import { MatchmakerQuestion, LeaderboardEntry, PrizeEntry, ContactEntry, MatchRecord, DrawQuarter, DrawFinals, DrawRound, DrawMatchResult, DrawRoundId, DrawCategoryId, DrawCategoryOption, DrawMarketId, DrawMarketOption } from './types';
+import { MatchmakerQuestion, LeaderboardEntry, PrizeEntry, ContactEntry, MatchRecord, DrawQuarter, DrawFinals, DrawRound, DrawMatchEntry, DrawMatchResult, DrawRoundId, DrawCategoryId, DrawCategoryOption, DrawMarketId, DrawMarketOption } from './types';
 
 export const ASSETS = {
   logo: "/logo.png",
@@ -379,6 +379,20 @@ export const DRAW_BRACKET_ROUNDS_BY_CATEGORY: Record<DrawCategoryId, DrawRound[]
 export const DRAW_BRACKET_ROUNDS_BY_MARKET: Record<DrawMarketId, Record<DrawCategoryId, DrawRound[]>> = {
   globalFinals: DRAW_BRACKET_ROUNDS_BY_CATEGORY
 };
+
+export const DEFAULT_DRAW_ENTRIES: DrawMatchEntry[] = DRAW_MARKET_OPTIONS.flatMap((market) => (
+  DRAW_CATEGORY_OPTIONS.flatMap((category) => (
+    DRAW_BRACKET_ROUNDS_BY_MARKET[market.id][category.id][0].matches.map((match) => ({
+      id: `draw-entry-${market.id}-${category.id}-${match.id}`,
+      marketId: market.id,
+      categoryId: category.id,
+      matchId: match.id,
+      p1Name: match.players[0].name,
+      p2Name: match.players[1].name,
+      updatedAt: '2026-05-13T00:00:00.000Z'
+    }))
+  ))
+));
 
 export const DEFAULT_DRAW_RESULTS: DrawMatchResult[] = DRAW_MARKET_OPTIONS.flatMap((market) => (
   DRAW_CATEGORY_OPTIONS.flatMap((category) => (

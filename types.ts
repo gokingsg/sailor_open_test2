@@ -152,6 +152,16 @@ export interface DrawRound {
   matches: DrawMatch[];
 }
 
+export interface DrawMatchEntry {
+  id: string;
+  marketId: DrawMarketId;
+  categoryId: DrawCategoryId;
+  matchId: string;
+  p1Name: string;
+  p2Name: string;
+  updatedAt: string;
+}
+
 export interface DrawMatchResult {
   id: string;
   marketId: DrawMarketId;

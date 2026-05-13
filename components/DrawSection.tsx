@@ -3,7 +3,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { CheckCircle, ChevronDown, Filter, GitBranch, MapPin, Trophy, X } from 'lucide-react';
 import { DRAW_CATEGORY_OPTIONS, DRAW_MARKET_OPTIONS } from '../constants';
 import { DrawCategoryId, DrawCompetitor, DrawMarketId, DrawMatch, DrawRound } from '../types';
-import { buildDrawBracket, DRAW_RESULTS_UPDATED_EVENT, loadDrawResults } from '../utils/drawBracket';
+import { buildDrawBracket, DRAW_RESULTS_UPDATED_EVENT, loadDrawEntries, loadDrawResults } from '../utils/drawBracket';
 
 const ROW_HEIGHT = 96;
 const PLAYER_HEIGHT = 34;
@@ -330,12 +330,16 @@ export const DrawSection = ({ onPlayerClick }: DrawSectionProps) => {
   const [activeMarket, setActiveMarket] = useState<DrawMarketId>('globalFinals');
   const [activeCategory, setActiveCategory] = useState<DrawCategoryId>('men');
   const [drawResults, setDrawResults] = useState(() => loadDrawResults('globalFinals', 'men'));
+  const [drawEntries, setDrawEntries] = useState(() => loadDrawEntries('globalFinals', 'men'));
   const [selectedMatch, setSelectedMatch] = useState<SelectedDrawMatch | null>(null);
   const activeMarketOption = DRAW_MARKET_OPTIONS.find((market) => market.id === activeMarket) || DRAW_MARKET_OPTIONS[0];
   const activeCategoryOption = DRAW_CATEGORY_OPTIONS.find((category) => category.id === activeCategory) || DRAW_CATEGORY_OPTIONS[0];
 
   useEffect(() => {
-    const syncDrawResults = () => setDrawResults(loadDrawResults(activeMarket, activeCategory));
+    const syncDrawResults = () => {
+      setDrawEntries(loadDrawEntries(activeMarket, activeCategory));
+      setDrawResults(loadDrawResults(activeMarket, activeCategory));
+    };
 
     window.addEventListener(DRAW_RESULTS_UPDATED_EVENT, syncDrawResults);
     window.addEventListener('storage', syncDrawResults);
@@ -347,17 +351,19 @@ export const DrawSection = ({ onPlayerClick }: DrawSectionProps) => {
 
   const handleMarketChange = (marketId: DrawMarketId) => {
     setActiveMarket(marketId);
+    setDrawEntries(loadDrawEntries(marketId, activeCategory));
     setDrawResults(loadDrawResults(marketId, activeCategory));
     setSelectedMatch(null);
   };
 
   const handleCategoryChange = (categoryId: DrawCategoryId) => {
     setActiveCategory(categoryId);
+    setDrawEntries(loadDrawEntries(activeMarket, categoryId));
     setDrawResults(loadDrawResults(activeMarket, categoryId));
     setSelectedMatch(null);
   };
 
-  const rounds = useMemo(() => buildDrawBracket(activeMarket, activeCategory, drawResults), [activeMarket, activeCategory, drawResults]);
+  const rounds = useMemo(() => buildDrawBracket(activeMarket, activeCategory, drawResults, drawEntries), [activeMarket, activeCategory, drawResults, drawEntries]);
   const [last32Round, last16Round, quarterFinalRound, semiFinalRound, finalRound] = rounds;
 
   return (

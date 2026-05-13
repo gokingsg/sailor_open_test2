@@ -3,8 +3,8 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Plus, Edit2, Trash2, X, Upload, FileCheck, Save, Calendar, Clock, MapPin, ToggleLeft, ToggleRight, Minus, ChevronDown, CheckCircle, Trophy, GitBranch, ClipboardList } from 'lucide-react';
 import { EmptyState } from './EmptyState';
 import { DRAW_CATEGORY_OPTIONS, DRAW_MARKET_OPTIONS, LOCATIONS } from '../constants';
-import { DrawCategoryId, DrawMarketId, DrawMatch, DrawMatchResult, DrawRound } from '../types';
-import { buildDrawBracket, getFlatDrawMatches, isDrawMatchComplete, isDrawMatchReady, loadDrawResults, saveDrawResults } from '../utils/drawBracket';
+import { DrawCategoryId, DrawMarketId, DrawMatch, DrawMatchEntry, DrawMatchResult, DrawRound } from '../types';
+import { buildDrawBracket, getFlatDrawMatches, isDrawMatchComplete, isDrawMatchReady, loadDrawEntries, loadDrawResults, saveDrawEntries, saveDrawResults } from '../utils/drawBracket';
 
 export interface ScoreSet {
   p1: string;
@@ -136,16 +136,18 @@ export const ScoreRegistrationSection = ({ initialData, titleOverride }: ScoreRe
   const [activeDrawMarket, setActiveDrawMarket] = useState<DrawMarketId>('globalFinals');
   const [activeDrawCategory, setActiveDrawCategory] = useState<DrawCategoryId>('men');
   const [drawResults, setDrawResults] = useState<DrawMatchResult[]>(() => loadDrawResults('globalFinals', 'men'));
+  const [drawEntries, setDrawEntries] = useState<DrawMatchEntry[]>(() => loadDrawEntries('globalFinals', 'men'));
   const [drawDrafts, setDrawDrafts] = useState<Record<string, DrawResultDraft>>({});
 
   useEffect(() => {
+    setDrawEntries(loadDrawEntries(activeDrawMarket, activeDrawCategory));
     setDrawResults(loadDrawResults(activeDrawMarket, activeDrawCategory));
     setDrawDrafts({});
   }, [activeDrawMarket, activeDrawCategory]);
 
   const activeDrawMarketLabel = DRAW_MARKET_OPTIONS.find((market) => market.id === activeDrawMarket)?.label || 'Global Finals';
   const activeDrawCategoryLabel = DRAW_CATEGORY_OPTIONS.find((category) => category.id === activeDrawCategory)?.label || "Men's Singles";
-  const drawRounds = useMemo(() => buildDrawBracket(activeDrawMarket, activeDrawCategory, drawResults), [activeDrawMarket, activeDrawCategory, drawResults]);
+  const drawRounds = useMemo(() => buildDrawBracket(activeDrawMarket, activeDrawCategory, drawResults, drawEntries), [activeDrawMarket, activeDrawCategory, drawResults, drawEntries]);
   const flatDrawMatches = useMemo(() => getFlatDrawMatches(drawRounds), [drawRounds]);
 
   const getDrawResultForMatch = (match: DrawMatch) => (
@@ -168,6 +170,27 @@ export const ScoreRegistrationSection = ({ initialData, titleOverride }: ScoreRe
         return nextDrafts;
       });
     }
+  };
+
+  const updateDrawEntryName = (match: DrawMatch, playerIndex: 0 | 1, value: string) => {
+    const existingEntry = drawEntries.find((entry) => entry.matchId === match.id);
+    const nextEntry: DrawMatchEntry = {
+      id: existingEntry?.id || `draw-entry-${activeDrawMarket}-${activeDrawCategory}-${match.id}`,
+      marketId: activeDrawMarket,
+      categoryId: activeDrawCategory,
+      matchId: match.id,
+      p1Name: playerIndex === 0 ? value : existingEntry?.p1Name ?? match.players[0].name,
+      p2Name: playerIndex === 1 ? value : existingEntry?.p2Name ?? match.players[1].name,
+      updatedAt: new Date().toISOString()
+    };
+    const nextEntries = [
+      ...drawEntries.filter((entry) => entry.matchId !== match.id),
+      nextEntry
+    ];
+
+    saveDrawEntries(nextEntries, activeDrawMarket, activeDrawCategory);
+    setDrawEntries(nextEntries);
+    setDrawResults(loadDrawResults(activeDrawMarket, activeDrawCategory));
   };
 
   const handleClearDrawResult = (match: DrawMatch) => {
@@ -658,37 +681,36 @@ export const ScoreRegistrationSection = ({ initialData, titleOverride }: ScoreRe
                                 const scoreValue = index === 0 ? draft.p1Score : draft.p2Score;
                                 const selectedWinner = ready && draft.winnerIndex === index;
                                 const playerPending = player.name.includes('TBD');
+                                const namesEditable = round.id === 'last32';
 
                                 return (
                                   <div
                                     key={`${match.id}-${index}`}
-                                    className={`grid gap-3 rounded-2xl border px-4 py-3 shadow-sm md:grid-cols-[minmax(0,1fr)_104px] md:items-center ${
+                                    className={`grid gap-3 rounded-2xl border px-4 py-3 shadow-sm sm:grid-cols-[minmax(0,1fr)_76px_auto] sm:items-center ${
                                       selectedWinner
                                         ? 'border-[#4c8bf5]/40 bg-[#f0f7ff]'
                                         : 'border-slate-100 bg-white'
-                                    } ${!ready ? 'opacity-60' : ''}`}
+                                    }`}
                                   >
-                                    <button
-                                      type="button"
-                                      disabled={!ready}
-                                      onClick={() => updateDrawDraft(match, { winnerIndex: index as 0 | 1 })}
-                                      className={`flex items-center gap-2 rounded-xl px-3 py-2 text-xs font-black uppercase tracking-wider transition-all disabled:cursor-not-allowed ${
-                                        selectedWinner
-                                          ? 'bg-[#000080] text-white'
-                                          : 'bg-slate-50 text-slate-400 hover:bg-[#4c8bf5]/10 hover:text-[#000080]'
-                                      }`}
-                                    >
-                                      {selectedWinner ? <CheckCircle size={15} /> : <span className="h-[15px] w-[15px]" />}
-                                      Winner
-                                    </button>
-
                                     <div className="min-w-0">
-                                      <div className={`truncate text-sm font-black ${
-                                        playerPending ? 'text-slate-300' : selectedWinner ? 'text-[#000080]' : 'text-slate-500'
-                                      }`}>
-                                        {player.name}
-                                      </div>
-                                      <div className="text-[10px] font-black uppercase tracking-widest text-slate-300">Player {index + 1}</div>
+                                      {namesEditable ? (
+                                        <input
+                                          type="text"
+                                          value={player.name}
+                                          onChange={(event) => updateDrawEntryName(match, index as 0 | 1, event.target.value)}
+                                          placeholder={`Player ${index + 1}`}
+                                          className={`h-10 w-full rounded-xl border px-3 text-sm font-black outline-none transition-all focus:border-[#4c8bf5] focus:ring-2 focus:ring-[#4c8bf5]/20 ${
+                                            playerPending ? 'border-slate-100 bg-white text-slate-400' : 'border-slate-200 bg-white text-[#000080]'
+                                          }`}
+                                        />
+                                      ) : (
+                                        <div className={`truncate text-sm font-black ${
+                                          playerPending ? 'text-slate-300' : selectedWinner ? 'text-[#000080]' : 'text-slate-500'
+                                        }`}>
+                                          {player.name}
+                                        </div>
+                                      )}
+                                      <div className="mt-1 text-[10px] font-black uppercase tracking-widest text-slate-300">Player {index + 1}</div>
                                     </div>
 
                                     <input
@@ -698,8 +720,22 @@ export const ScoreRegistrationSection = ({ initialData, titleOverride }: ScoreRe
                                       value={scoreValue}
                                       onChange={(event) => updateDrawDraft(match, index === 0 ? { p1Score: event.target.value } : { p2Score: event.target.value })}
                                       placeholder={ready ? 'Score' : 'Locked'}
-                                      className="h-11 rounded-xl border border-slate-200 bg-slate-50 px-3 text-center text-sm font-black text-[#000080] outline-none transition-all focus:border-[#4c8bf5] focus:ring-2 focus:ring-[#4c8bf5]/20 disabled:cursor-not-allowed disabled:text-slate-300"
+                                      className="h-10 w-full rounded-xl border border-slate-200 bg-slate-50 px-2 text-center text-sm font-black text-[#000080] outline-none transition-all focus:border-[#4c8bf5] focus:ring-2 focus:ring-[#4c8bf5]/20 disabled:cursor-not-allowed disabled:text-slate-300"
                                     />
+
+                                    <button
+                                      type="button"
+                                      disabled={!ready}
+                                      onClick={() => updateDrawDraft(match, { winnerIndex: index as 0 | 1 })}
+                                      className={`inline-flex h-10 items-center justify-center gap-2 rounded-xl px-3 text-[11px] font-black uppercase tracking-wider transition-all disabled:cursor-not-allowed ${
+                                        selectedWinner
+                                          ? 'bg-[#000080] text-white'
+                                          : 'bg-slate-50 text-slate-400 hover:bg-[#4c8bf5]/10 hover:text-[#000080]'
+                                      }`}
+                                    >
+                                      {selectedWinner ? <CheckCircle size={15} /> : <span className="h-[15px] w-[15px]" />}
+                                      Winner
+                                    </button>
                                   </div>
                                 );
                               })}
