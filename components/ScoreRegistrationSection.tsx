@@ -662,7 +662,7 @@ export const ScoreRegistrationSection = ({ initialData, titleOverride }: ScoreRe
                                 return (
                                   <div
                                     key={`${match.id}-${index}`}
-                                    className={`grid gap-3 rounded-2xl border px-4 py-3 shadow-sm md:grid-cols-[auto_minmax(0,1fr)_104px] md:items-center ${
+                                    className={`grid gap-3 rounded-2xl border px-4 py-3 shadow-sm md:grid-cols-[minmax(0,1fr)_104px] md:items-center ${
                                       selectedWinner
                                         ? 'border-[#4c8bf5]/40 bg-[#f0f7ff]'
                                         : 'border-slate-100 bg-white'
@@ -682,20 +682,13 @@ export const ScoreRegistrationSection = ({ initialData, titleOverride }: ScoreRe
                                       Winner
                                     </button>
 
-                                    <div className="flex min-w-0 items-center gap-3">
-                                      <span className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-xs font-black ${
-                                        selectedWinner ? 'bg-[#4c8bf5] text-white' : 'bg-slate-100 text-slate-400'
+                                    <div className="min-w-0">
+                                      <div className={`truncate text-sm font-black ${
+                                        playerPending ? 'text-slate-300' : selectedWinner ? 'text-[#000080]' : 'text-slate-500'
                                       }`}>
-                                        {player.seed ?? '—'}
-                                      </span>
-                                      <div className="min-w-0">
-                                        <div className={`truncate text-sm font-black ${
-                                          playerPending ? 'text-slate-300' : selectedWinner ? 'text-[#000080]' : 'text-slate-500'
-                                        }`}>
-                                          {player.name}
-                                        </div>
-                                        <div className="text-[10px] font-black uppercase tracking-widest text-slate-300">Player {index + 1}</div>
+                                        {player.name}
                                       </div>
+                                      <div className="text-[10px] font-black uppercase tracking-widest text-slate-300">Player {index + 1}</div>
                                     </div>
 
                                     <input

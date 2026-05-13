@@ -52,18 +52,13 @@ const PlayerLine = ({
       type="button"
       disabled={!clickable}
       onClick={onClick}
-      className={`relative grid w-full grid-cols-[20px_minmax(0,1fr)_18px_36px] items-center gap-2 rounded-xl border bg-white px-2 text-left text-[13px] shadow-sm transition-all ${
+      className={`relative grid w-full grid-cols-[minmax(0,1fr)_18px_40px] items-center gap-3 rounded-xl border bg-white px-3 text-left text-[13px] shadow-sm transition-all ${
       player.isWinner || isPending
         ? 'border-[#4c8bf5]/25 text-[#000080] shadow-[#4c8bf5]/10'
         : 'border-slate-100 text-slate-400'
     } ${clickable ? 'cursor-pointer hover:-translate-y-0.5 hover:border-[#4c8bf5]/60 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-[#4c8bf5]/30' : 'cursor-default disabled:opacity-100'}`}
       style={{ height: PLAYER_HEIGHT }}
     >
-      <span className={`flex h-5 w-5 items-center justify-center rounded-full text-[10px] font-black ${
-        player.isWinner || isPending ? 'bg-[#4c8bf5] text-white' : 'bg-slate-100 text-slate-400'
-      }`}>
-        {player.seed ?? '—'}
-      </span>
       <span className={`min-w-0 truncate whitespace-nowrap leading-tight ${player.isWinner ? 'font-black' : 'font-bold'}`}>
         {player.name}
       </span>
@@ -295,25 +290,15 @@ const DrawMatchModal = ({
 
             return (
               <div key={`${match.id}-${player.name}`} className="flex items-center justify-between gap-4">
-                <div className="flex min-w-0 items-center gap-3">
-                  <div className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-sm font-black text-white ${
-                    isFocus ? 'bg-[#4c8bf5]' : 'bg-slate-300'
-                  }`}>
-                    {player.seed ?? player.name.charAt(0)}
-                  </div>
-                  <div className="min-w-0">
-                    <div className="flex min-w-0 items-center gap-2">
-                      <span className="truncate text-sm font-black text-[#000080]">{player.name}</span>
-                      {isFocus && <span className="text-xs font-black text-[#4c8bf5]/80">(Selected)</span>}
-                      {isWinner && <CheckCircle size={16} className="shrink-0 text-green-500" />}
-                    </div>
-                    <div className="mt-0.5 text-[10px] font-black uppercase tracking-widest text-slate-300">
-                      Seed {player.seed ?? 'TBD'}
-                    </div>
+                <div className="min-w-0">
+                  <div className="flex min-w-0 items-center gap-2">
+                    <span className="truncate text-sm font-black text-[#000080]">{player.name}</span>
+                    {isFocus && <span className="text-xs font-black text-[#4c8bf5]/80">(Selected)</span>}
+                    {isWinner && <CheckCircle size={16} className="shrink-0 text-green-500" />}
                   </div>
                 </div>
                 <span className={`flex h-10 w-12 shrink-0 items-center justify-center rounded-xl text-base font-black ${
-                  isWinner || isFocus ? 'bg-slate-100 text-[#000080]' : 'bg-slate-50 text-slate-500'
+                  isWinner ? 'bg-[#000080] text-white shadow-sm shadow-[#000080]/15' : 'bg-slate-50 text-slate-400'
                 }`}>
                   {player.score}
                 </span>

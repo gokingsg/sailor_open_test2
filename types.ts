@@ -121,7 +121,6 @@ export interface DrawFinals {
 
 export interface DrawCompetitor {
   name: string;
-  seed?: number;
   score: string;
   isWinner: boolean;
 }

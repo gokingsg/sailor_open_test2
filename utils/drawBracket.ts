@@ -41,7 +41,7 @@ const toPendingCompetitor = (name: string): DrawCompetitor => ({
 
 const toAdvancingCompetitor = (player?: DrawCompetitor): DrawCompetitor => (
   player
-    ? { name: player.name, seed: player.seed, score: '—', isWinner: false }
+    ? { name: player.name, score: '—', isWinner: false }
     : toPendingCompetitor('TBD')
 );
 
@@ -125,14 +125,14 @@ export const buildDrawBracket = (
   const rounds: DrawRound[] = [];
 
   const last32Matches = baseRounds[0].matches.map((match) => {
-    const seededMatch: DrawMatch = {
+    const baseMatch: DrawMatch = {
       ...match,
       players: [
-        { name: match.players[0].name, seed: match.players[0].seed, score: '—', isWinner: false },
-        { name: match.players[1].name, seed: match.players[1].seed, score: '—', isWinner: false }
+        { name: match.players[0].name, score: '—', isWinner: false },
+        { name: match.players[1].name, score: '—', isWinner: false }
       ]
     };
-    return applyResult(seededMatch, resultByMatch.get(seededMatch.id));
+    return applyResult(baseMatch, resultByMatch.get(baseMatch.id));
   });
 
   rounds.push({ id: 'last32', label: ROUND_LABELS.last32, matches: last32Matches });
