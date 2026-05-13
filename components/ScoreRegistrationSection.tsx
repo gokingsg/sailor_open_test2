@@ -251,19 +251,6 @@ export const ScoreRegistrationSection = ({ initialData, titleOverride }: ScoreRe
     })
   );
 
-  const handleSaveAllDrawDrafts = () => {
-    const saveableEntries = getSaveableDrawDraftEntries();
-    if (saveableEntries.length === 0) return;
-
-    const savedMatchIds = saveableEntries.map(({ match }) => match.id);
-    const nextResults = [
-      ...drawResults.filter((result) => !savedMatchIds.includes(result.matchId)),
-      ...saveableEntries.map(({ round, match }) => createDrawResult(round, match, getDrawDraft(match)))
-    ];
-
-    syncDrawResults(nextResults, savedMatchIds);
-  };
-
   const handleOpenModal = (log?: ScoreLog) => {
     if (log) {
       setEditingId(log.id);
@@ -382,22 +369,13 @@ export const ScoreRegistrationSection = ({ initialData, titleOverride }: ScoreRe
             <h1 className="text-3xl lg:text-5xl font-black text-[#000080] mb-4 uppercase">{titleOverride || "SUBMIT MATCH RESULT"}</h1>
             <p className="text-slate-500 font-medium">Admin panel for recording official match results.</p>
           </div>
-          {activeManager === 'league' ? (
+          {activeManager === 'league' && (
             <button 
               onClick={() => handleOpenModal()}
               className="flex items-center gap-2 px-6 py-3 bg-[#4c8bf5] hover:bg-[#3b7ae4] text-white rounded-xl font-bold shadow-lg shadow-[#4c8bf5]/20 active:scale-95 transition-all"
             >
               <Plus size={20} />
               Add New Record
-            </button>
-          ) : (
-            <button 
-              onClick={handleSaveAllDrawDrafts}
-              disabled={saveableDrawDraftCount === 0}
-              className="flex items-center gap-2 px-6 py-3 bg-[#4c8bf5] text-white rounded-xl font-bold shadow-lg shadow-[#4c8bf5]/20 active:scale-95 transition-all hover:bg-[#3b7ae4] disabled:cursor-not-allowed disabled:bg-slate-200 disabled:text-slate-400 disabled:shadow-none"
-            >
-              <Save size={20} />
-              Save Draw Updates
             </button>
           )}
         </div>
