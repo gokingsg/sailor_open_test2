@@ -1,9 +1,10 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { LogOut, ClipboardList, Trophy, FileText, FlaskConical } from 'lucide-react';
+import { LogOut, ClipboardList, Trophy, FileText, FlaskConical, GitBranch } from 'lucide-react';
+import { AppView } from '../types';
 
 interface UserProfileProps {
-  onNavigate: (view: 'home' | 'history' | 'leaderboard' | 'registration' | 'test') => void;
+  onNavigate: (view: AppView) => void;
   align?: 'left' | 'right';
 }
 
@@ -21,7 +22,7 @@ export const UserProfile = ({ onNavigate, align = 'right' }: UserProfileProps) =
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  const handleNavClick = (view: 'history' | 'leaderboard' | 'registration' | 'test') => {
+  const handleNavClick = (view: AppView) => {
     setIsOpen(false);
     onNavigate(view);
   };
@@ -71,6 +72,14 @@ export const UserProfile = ({ onNavigate, align = 'right' }: UserProfileProps) =
                 Match History
               </button>
               
+              <button 
+                onClick={() => handleNavClick('draw')}
+                className="w-full flex items-center gap-3 px-4 py-3 hover:bg-slate-50 text-[#000080] rounded-xl transition-colors font-bold text-sm"
+              >
+                <GitBranch size={18} className="text-[#4c8bf5]" />
+                Tournament Draw
+              </button>
+
               <button 
                 onClick={() => handleNavClick('leaderboard')}
                 className="w-full flex items-center gap-3 px-4 py-3 hover:bg-slate-50 text-[#000080] rounded-xl transition-colors font-bold text-sm"

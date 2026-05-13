@@ -12,17 +12,19 @@ import { LeaderboardSection } from './components/LeaderboardSection';
 import { ScoreRegistrationSection } from './components/ScoreRegistrationSection';
 import { TestEmptyStateSection } from './components/TestEmptyStateSection';
 import { Footer } from './components/Footer';
+import { DrawSection } from './components/DrawSection';
+import { AppView } from './types';
 
 export default function App() {
-  const [activeView, setActiveView] = useState<'home' | 'history' | 'leaderboard' | 'registration' | 'test'>('home');
+  const [activeView, setActiveView] = useState<AppView>('home');
   const [selectedPlayer, setSelectedPlayer] = useState<string | null>(null);
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
 
-  const handleNavigate = (view: 'home' | 'history' | 'leaderboard' | 'registration' | 'test') => {
+  const handleNavigate = (view: AppView) => {
     setActiveView(view);
     
     // Auto-collapse logic for data-heavy views
-    if (view === 'history' || view === 'leaderboard' || view === 'registration') {
+    if (view === 'draw' || view === 'history' || view === 'leaderboard' || view === 'registration') {
       setIsSidebarCollapsed(true);
     } else {
       setIsSidebarCollapsed(false);
@@ -70,6 +72,11 @@ export default function App() {
             <PrizesSection />
             <RegistrationFlow />
             <ContactSection />
+            <Footer />
+          </div>
+        ) : activeView === 'draw' ? (
+          <div className="flex-1 flex flex-col">
+            <DrawSection />
             <Footer />
           </div>
         ) : activeView === 'history' ? (

@@ -1,8 +1,10 @@
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Plus, Edit2, Trash2, X, Upload, FileCheck, Save, Calendar, Clock, MapPin, ToggleLeft, ToggleRight, Minus, ChevronDown, CheckCircle, Trophy } from 'lucide-react';
+import { Plus, Edit2, Trash2, X, Upload, FileCheck, Save, Calendar, Clock, MapPin, ToggleLeft, ToggleRight, Minus, ChevronDown, CheckCircle, Trophy, GitBranch, ClipboardList } from 'lucide-react';
 import { EmptyState } from './EmptyState';
 import { LOCATIONS } from '../constants';
+import { DrawMatch, DrawMatchResult, DrawRound } from '../types';
+import { buildDrawBracket, getFlatDrawMatches, isDrawMatchComplete, isDrawMatchReady, loadDrawResults, saveDrawResults } from '../utils/drawBracket';
 
 export interface ScoreSet {
   p1: string;
@@ -94,7 +96,19 @@ interface ScoreRegistrationSectionProps {
   titleOverride?: string;
 }
 
+interface DrawResultDraft {
+  p1Name: string;
+  p2Name: string;
+  p1Score: string;
+  p2Score: string;
+  winnerIndex: 0 | 1;
+  proofFile: string | null;
+}
+
+const editableScore = (score?: string) => (score && score !== '—' ? score : '');
+
 export const ScoreRegistrationSection = ({ initialData, titleOverride }: ScoreRegistrationSectionProps) => {
+  const [activeManager, setActiveManager] = useState<'league' | 'draw'>('league');
   const [logs, setLogs] = useState<ScoreLog[]>(initialData || DEFAULT_DATA);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
@@ -119,6 +133,125 @@ export const ScoreRegistrationSection = ({ initialData, titleOverride }: ScoreRe
 
   // Derived state for winner selection in UI
   const [winnerSide, setWinnerSide] = useState<'p1' | 'p2'>('p1');
+  const [drawResults, setDrawResults] = useState<DrawMatchResult[]>(() => loadDrawResults());
+  const [drawDrafts, setDrawDrafts] = useState<Record<string, DrawResultDraft>>({});
+
+  const drawRounds = useMemo(() => buildDrawBracket(drawResults), [drawResults]);
+  const flatDrawMatches = useMemo(() => getFlatDrawMatches(drawRounds), [drawRounds]);
+
+  const getDrawResultForMatch = (match: DrawMatch) => (
+    drawResults.find((result) => (
+      result.matchId === match.id &&
+      result.p1Name === match.players[0].name &&
+      result.p2Name === match.players[1].name
+    ))
+  );
+
+  const syncDrawResults = (nextResults: DrawMatchResult[], savedMatchIds: string[] = []) => {
+    saveDrawResults(nextResults);
+    setDrawResults(loadDrawResults());
+    if (savedMatchIds.length > 0) {
+      setDrawDrafts((prev) => {
+        const nextDrafts = { ...prev };
+        savedMatchIds.forEach((matchId) => {
+          delete nextDrafts[matchId];
+        });
+        return nextDrafts;
+      });
+    }
+  };
+
+  const handleClearDrawResult = (match: DrawMatch) => {
+    syncDrawResults(drawResults.filter((result) => result.matchId !== match.id), [match.id]);
+  };
+
+  const draftMatchesPlayers = (draft: DrawResultDraft | undefined, match: DrawMatch) => (
+    Boolean(draft && draft.p1Name === match.players[0].name && draft.p2Name === match.players[1].name)
+  );
+
+  const getDrawDraftFrom = (source: Record<string, DrawResultDraft>, match: DrawMatch): DrawResultDraft => {
+    const draft = source[match.id];
+    if (draftMatchesPlayers(draft, match)) return draft;
+
+    const existingResult = getDrawResultForMatch(match);
+    return {
+      p1Name: match.players[0].name,
+      p2Name: match.players[1].name,
+      p1Score: editableScore(existingResult?.p1Score || match.players[0].score),
+      p2Score: editableScore(existingResult?.p2Score || match.players[1].score),
+      winnerIndex: existingResult?.winnerIndex ?? (match.players[1].isWinner ? 1 : 0),
+      proofFile: existingResult?.proofFile || null
+    };
+  };
+
+  const getDrawDraft = (match: DrawMatch) => getDrawDraftFrom(drawDrafts, match);
+
+  const updateDrawDraft = (match: DrawMatch, patch: Partial<DrawResultDraft>) => {
+    setDrawDrafts((prev) => ({
+      ...prev,
+      [match.id]: {
+        ...getDrawDraftFrom(prev, match),
+        ...patch,
+        p1Name: match.players[0].name,
+        p2Name: match.players[1].name
+      }
+    }));
+  };
+
+  const drawDraftHasScores = (draft: DrawResultDraft) => (
+    Boolean(draft.p1Score.trim() && draft.p2Score.trim())
+  );
+
+  const createDrawResult = (
+    round: DrawRound,
+    match: DrawMatch,
+    draft: DrawResultDraft
+  ): DrawMatchResult => ({
+    id: getDrawResultForMatch(match)?.id || `draw-${match.id}`,
+    matchId: match.id,
+    roundId: round.id,
+    matchLabel: match.label,
+    p1Name: match.players[0].name,
+    p2Name: match.players[1].name,
+    p1Score: draft.p1Score.trim(),
+    p2Score: draft.p2Score.trim(),
+    winnerIndex: draft.winnerIndex,
+    proofFile: draft.proofFile,
+    updatedAt: new Date().toISOString()
+  });
+
+  const handleSaveDrawMatch = (
+    round: DrawRound,
+    match: DrawMatch
+  ) => {
+    const draft = getDrawDraft(match);
+    if (!isDrawMatchReady(match) || !drawDraftHasScores(draft)) return;
+
+    syncDrawResults([
+      ...drawResults.filter((result) => result.matchId !== match.id),
+      createDrawResult(round, match, draft)
+    ], [match.id]);
+  };
+
+  const getSaveableDrawDraftEntries = () => (
+    flatDrawMatches.filter(({ match }) => {
+      const draft = drawDrafts[match.id];
+      return isDrawMatchReady(match) && draftMatchesPlayers(draft, match) && drawDraftHasScores(draft as DrawResultDraft);
+    })
+  );
+
+  const handleSaveAllDrawDrafts = () => {
+    const saveableEntries = getSaveableDrawDraftEntries();
+    if (saveableEntries.length === 0) return;
+
+    const savedMatchIds = saveableEntries.map(({ match }) => match.id);
+    const nextResults = [
+      ...drawResults.filter((result) => !savedMatchIds.includes(result.matchId)),
+      ...saveableEntries.map(({ round, match }) => createDrawResult(round, match, getDrawDraft(match)))
+    ];
+
+    syncDrawResults(nextResults, savedMatchIds);
+  };
 
   const handleOpenModal = (log?: ScoreLog) => {
     if (log) {
@@ -219,6 +352,10 @@ export const ScoreRegistrationSection = ({ initialData, titleOverride }: ScoreRe
     return log.sets.map(s => `${s.p1}-${s.p2}`).join(", ");
   };
 
+  const saveableDrawDraftCount = getSaveableDrawDraftEntries().length;
+  const completedDrawCount = flatDrawMatches.filter(({ match }) => isDrawMatchComplete(match)).length;
+  const readyPendingDrawCount = flatDrawMatches.filter(({ match }) => isDrawMatchReady(match) && !isDrawMatchComplete(match)).length;
+
   return (
     <section className="relative px-6 lg:px-12 xl:px-24 py-12 lg:py-20 bg-slate-50 min-h-screen">
       <motion.div 
@@ -234,16 +371,51 @@ export const ScoreRegistrationSection = ({ initialData, titleOverride }: ScoreRe
             <h1 className="text-3xl lg:text-5xl font-black text-[#000080] mb-4 uppercase">{titleOverride || "SUBMIT MATCH RESULT"}</h1>
             <p className="text-slate-500 font-medium">Admin panel for recording official match results.</p>
           </div>
-          <button 
-            onClick={() => handleOpenModal()}
-            className="flex items-center gap-2 px-6 py-3 bg-[#4c8bf5] hover:bg-[#3b7ae4] text-white rounded-xl font-bold shadow-lg shadow-[#4c8bf5]/20 active:scale-95 transition-all"
+          {activeManager === 'league' ? (
+            <button 
+              onClick={() => handleOpenModal()}
+              className="flex items-center gap-2 px-6 py-3 bg-[#4c8bf5] hover:bg-[#3b7ae4] text-white rounded-xl font-bold shadow-lg shadow-[#4c8bf5]/20 active:scale-95 transition-all"
+            >
+              <Plus size={20} />
+              Add New Record
+            </button>
+          ) : (
+            <button 
+              onClick={handleSaveAllDrawDrafts}
+              disabled={saveableDrawDraftCount === 0}
+              className="flex items-center gap-2 px-6 py-3 bg-[#4c8bf5] text-white rounded-xl font-bold shadow-lg shadow-[#4c8bf5]/20 active:scale-95 transition-all hover:bg-[#3b7ae4] disabled:cursor-not-allowed disabled:bg-slate-200 disabled:text-slate-400 disabled:shadow-none"
+            >
+              <Save size={20} />
+              Save Draw Updates
+            </button>
+          )}
+        </div>
+
+        <div className="mb-6 inline-flex rounded-2xl border border-slate-100 bg-white p-1 shadow-sm">
+          <button
+            type="button"
+            onClick={() => setActiveManager('league')}
+            className={`flex items-center gap-2 rounded-xl px-5 py-3 text-sm font-black transition-all ${
+              activeManager === 'league' ? 'bg-[#000080] text-white shadow-lg' : 'text-slate-400 hover:text-[#000080]'
+            }`}
           >
-            <Plus size={20} />
-            Add New Record
+            <ClipboardList size={16} />
+            League Results
+          </button>
+          <button
+            type="button"
+            onClick={() => setActiveManager('draw')}
+            className={`flex items-center gap-2 rounded-xl px-5 py-3 text-sm font-black transition-all ${
+              activeManager === 'draw' ? 'bg-[#000080] text-white shadow-lg' : 'text-slate-400 hover:text-[#000080]'
+            }`}
+          >
+            <GitBranch size={16} />
+            Draw Results
           </button>
         </div>
 
         {/* Table Container */}
+        {activeManager === 'league' ? (
         <div className="bg-white rounded-[2rem] border border-slate-100 shadow-xl overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full text-left border-collapse min-w-[1000px]">
@@ -345,6 +517,213 @@ export const ScoreRegistrationSection = ({ initialData, titleOverride }: ScoreRe
             </table>
           </div>
         </div>
+        ) : (
+        <div className="overflow-hidden rounded-[2rem] border border-slate-100 bg-white shadow-xl">
+          <div className="border-b border-slate-100 bg-[#f8fbff] px-6 py-5">
+            <div className="flex flex-col gap-4 xl:flex-row xl:items-center xl:justify-between">
+              <div>
+                <h2 className="text-lg font-black uppercase tracking-tight text-[#000080]">Draw Result Management</h2>
+                <p className="text-sm font-medium text-slate-500">Edit bracket results inline by round. Winners unlock the next round automatically.</p>
+              </div>
+              <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+                <div className="rounded-xl bg-white px-4 py-2 text-center">
+                  <div className="text-lg font-black text-[#000080]">{completedDrawCount}</div>
+                  <div className="text-[10px] font-black uppercase tracking-widest text-slate-400">Completed</div>
+                </div>
+                <div className="rounded-xl bg-white px-4 py-2 text-center">
+                  <div className="text-lg font-black text-amber-500">{readyPendingDrawCount}</div>
+                  <div className="text-[10px] font-black uppercase tracking-widest text-slate-400">Ready</div>
+                </div>
+                <div className="rounded-xl bg-white px-4 py-2 text-center">
+                  <div className="text-lg font-black text-[#4c8bf5]">{saveableDrawDraftCount}</div>
+                  <div className="text-[10px] font-black uppercase tracking-widest text-slate-400">Unsaved</div>
+                </div>
+                <div className="rounded-xl bg-white px-4 py-2 text-center">
+                  <div className="text-lg font-black text-[#000080]">{drawResults.length}</div>
+                  <div className="text-[10px] font-black uppercase tracking-widest text-slate-400">Records</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="grid gap-5 p-4 md:p-6">
+            {drawRounds.map((round) => {
+              const roundCompleted = round.matches.filter((match) => isDrawMatchComplete(match)).length;
+              const roundReady = round.matches.filter((match) => isDrawMatchReady(match) && !isDrawMatchComplete(match)).length;
+
+              return (
+                <section key={round.id} className="overflow-hidden rounded-2xl border border-slate-100 bg-white">
+                  <div className="flex flex-col gap-2 border-b border-slate-100 bg-[#f0f7ff] px-5 py-4 md:flex-row md:items-center md:justify-between">
+                    <div>
+                      <h3 className="text-sm font-black uppercase tracking-widest text-[#000080]">{round.label}</h3>
+                      <p className="mt-1 text-xs font-bold text-slate-500">
+                        {roundCompleted}/{round.matches.length} completed · {roundReady} ready for result
+                      </p>
+                    </div>
+                    <span className="w-fit rounded-lg bg-white px-3 py-1 text-xs font-black uppercase tracking-widest text-[#4c8bf5]">
+                      {round.matches.length} matches
+                    </span>
+                  </div>
+
+                  <div className="divide-y divide-slate-100">
+                    {round.matches.map((match) => {
+                      const storedResult = getDrawResultForMatch(match);
+                      const ready = isDrawMatchReady(match);
+                      const complete = isDrawMatchComplete(match);
+                      const draft = getDrawDraft(match);
+                      const winner = match.players.find((player) => player.isWinner);
+                      const saveDisabled = !ready || !drawDraftHasScores(draft);
+                      const proofInputId = `draw-proof-${match.id}`;
+
+                      return (
+                        <div key={match.id} className={`p-5 ${ready ? 'bg-white' : 'bg-slate-50/70'}`}>
+                          <div className="mb-4 flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
+                            <div>
+                              <div className="flex flex-wrap items-center gap-2">
+                                <span className="text-sm font-black text-[#000080]">{match.label}</span>
+                                <span className="rounded-full bg-slate-100 px-2.5 py-1 text-[10px] font-black uppercase tracking-wider text-slate-400">{match.id}</span>
+                                <span className={`rounded-full px-2.5 py-1 text-[10px] font-black uppercase tracking-wider ${
+                                  complete
+                                    ? 'bg-green-50 text-green-600'
+                                    : ready
+                                      ? 'bg-amber-50 text-amber-600'
+                                      : 'bg-slate-100 text-slate-400'
+                                }`}>
+                                  {complete ? 'Saved' : ready ? 'Ready' : 'Locked'}
+                                </span>
+                              </div>
+                              <p className="mt-1 text-xs font-bold text-slate-400">
+                                {!ready
+                                  ? 'Save the required previous-round winners to unlock this match.'
+                                  : complete
+                                    ? `Winner advances: ${winner?.name}`
+                                    : 'Enter both scores and choose the winner.'}
+                              </p>
+                            </div>
+                            <div className="flex flex-wrap gap-2">
+                              <button
+                                type="button"
+                                disabled={saveDisabled}
+                                onClick={() => handleSaveDrawMatch(round, match)}
+                                className="inline-flex items-center gap-2 rounded-xl bg-[#4c8bf5] px-4 py-2 text-xs font-black uppercase tracking-wider text-white transition-all hover:bg-[#3b7ae4] disabled:cursor-not-allowed disabled:bg-slate-200 disabled:text-slate-400"
+                              >
+                                <Save size={14} />
+                                {storedResult ? 'Update' : 'Save'}
+                              </button>
+                              <button
+                                type="button"
+                                disabled={!storedResult}
+                                onClick={() => handleClearDrawResult(match)}
+                                className="inline-flex items-center gap-2 rounded-xl bg-red-50 px-4 py-2 text-xs font-black uppercase tracking-wider text-red-500 transition-all hover:bg-red-100 disabled:cursor-not-allowed disabled:bg-slate-50 disabled:text-slate-300"
+                              >
+                                <Trash2 size={14} />
+                                Clear
+                              </button>
+                            </div>
+                          </div>
+
+                          <div className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_260px]">
+                            <div className="space-y-3">
+                              {match.players.map((player, index) => {
+                                const scoreValue = index === 0 ? draft.p1Score : draft.p2Score;
+                                const selectedWinner = ready && draft.winnerIndex === index;
+                                const playerPending = player.name.includes('TBD');
+
+                                return (
+                                  <div
+                                    key={`${match.id}-${index}`}
+                                    className={`grid gap-3 rounded-2xl border px-4 py-3 shadow-sm md:grid-cols-[auto_minmax(0,1fr)_104px] md:items-center ${
+                                      selectedWinner
+                                        ? 'border-[#4c8bf5]/40 bg-[#f0f7ff]'
+                                        : 'border-slate-100 bg-white'
+                                    } ${!ready ? 'opacity-60' : ''}`}
+                                  >
+                                    <button
+                                      type="button"
+                                      disabled={!ready}
+                                      onClick={() => updateDrawDraft(match, { winnerIndex: index as 0 | 1 })}
+                                      className={`flex items-center gap-2 rounded-xl px-3 py-2 text-xs font-black uppercase tracking-wider transition-all disabled:cursor-not-allowed ${
+                                        selectedWinner
+                                          ? 'bg-[#000080] text-white'
+                                          : 'bg-slate-50 text-slate-400 hover:bg-[#4c8bf5]/10 hover:text-[#000080]'
+                                      }`}
+                                    >
+                                      {selectedWinner ? <CheckCircle size={15} /> : <span className="h-[15px] w-[15px]" />}
+                                      Winner
+                                    </button>
+
+                                    <div className="flex min-w-0 items-center gap-3">
+                                      <span className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-xs font-black ${
+                                        selectedWinner ? 'bg-[#4c8bf5] text-white' : 'bg-slate-100 text-slate-400'
+                                      }`}>
+                                        {player.seed ?? '—'}
+                                      </span>
+                                      <div className="min-w-0">
+                                        <div className={`truncate text-sm font-black ${
+                                          playerPending ? 'text-slate-300' : selectedWinner ? 'text-[#000080]' : 'text-slate-500'
+                                        }`}>
+                                          {player.name}
+                                        </div>
+                                        <div className="text-[10px] font-black uppercase tracking-widest text-slate-300">Player {index + 1}</div>
+                                      </div>
+                                    </div>
+
+                                    <input
+                                      disabled={!ready}
+                                      type="text"
+                                      inputMode="numeric"
+                                      value={scoreValue}
+                                      onChange={(event) => updateDrawDraft(match, index === 0 ? { p1Score: event.target.value } : { p2Score: event.target.value })}
+                                      placeholder={ready ? 'Score' : 'Locked'}
+                                      className="h-11 rounded-xl border border-slate-200 bg-slate-50 px-3 text-center text-sm font-black text-[#000080] outline-none transition-all focus:border-[#4c8bf5] focus:ring-2 focus:ring-[#4c8bf5]/20 disabled:cursor-not-allowed disabled:text-slate-300"
+                                    />
+                                  </div>
+                                );
+                              })}
+                            </div>
+
+                            <div className="flex flex-col justify-between gap-3 rounded-2xl border border-slate-100 bg-slate-50 p-4">
+                              <div>
+                                <div className="text-xs font-black uppercase tracking-widest text-slate-400">Proof</div>
+                                <input
+                                  id={proofInputId}
+                                  type="file"
+                                  disabled={!ready}
+                                  className="hidden"
+                                  onChange={(event) => {
+                                    if (event.target.files?.[0]) updateDrawDraft(match, { proofFile: event.target.files[0].name });
+                                  }}
+                                />
+                                <label
+                                  htmlFor={ready ? proofInputId : ''}
+                                  className={`mt-3 flex items-center justify-center gap-2 rounded-xl border border-dashed px-3 py-3 text-center text-xs font-bold transition-colors ${
+                                    ready
+                                      ? 'cursor-pointer border-slate-300 bg-white text-slate-500 hover:bg-slate-100'
+                                      : 'cursor-not-allowed border-slate-200 bg-slate-50 text-slate-300'
+                                  }`}
+                                >
+                                  <Upload size={15} />
+                                  <span className="truncate">{draft.proofFile || 'Upload proof'}</span>
+                                </label>
+                              </div>
+                              <div className="rounded-xl bg-white px-3 py-2">
+                                <div className="text-[10px] font-black uppercase tracking-widest text-slate-300">Advancement</div>
+                                <div className="mt-1 truncate text-sm font-black text-[#000080]">
+                                  {complete ? winner?.name : ready ? 'Pending result' : 'Waiting'}
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </section>
+              );
+            })}
+          </div>
+        </div>
+        )}
       </motion.div>
 
       {/* Modal */}

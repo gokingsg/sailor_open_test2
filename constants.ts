@@ -1,5 +1,5 @@
 
-import { MatchmakerQuestion, LeaderboardEntry, PrizeEntry, ContactEntry, MatchRecord } from './types';
+import { MatchmakerQuestion, LeaderboardEntry, PrizeEntry, ContactEntry, MatchRecord, DrawQuarter, DrawFinals, DrawRound, DrawMatchResult, DrawRoundId } from './types';
 
 export const ASSETS = {
   logo: "/logo.png",
@@ -172,3 +172,176 @@ export const MATCH_HISTORY_DATA: MatchRecord[] = [
     player2: { name: "Simon Swenson", isWinner: false, scores: [4] }
   }
 ];
+
+const createDrawSlots = (startSeed: number, count: number, label = "Player name") => (
+  Array.from({ length: count }, (_, index) => ({
+    label,
+    score: "___",
+    meta: `Seed ${String(startSeed + index).padStart(2, '0')}`
+  }))
+);
+
+const createWinnerSlots = (prefix: string, count: number) => (
+  Array.from({ length: count }, (_, index) => ({
+    label: `${prefix} ${index + 1}`,
+    score: "___"
+  }))
+);
+
+export const DRAW_QUARTERS: DrawQuarter[] = [
+  {
+    id: "qf1",
+    half: "left",
+    title: "QF1",
+    subtitle: "Left Half - Top Quarter",
+    last32: createDrawSlots(1, 8),
+    last16: createWinnerSlots("Last 16 slot", 4),
+    quarterFinal: createWinnerSlots("Quarter-final slot", 2),
+    winner: { label: "QF1 Winner", score: "___" }
+  },
+  {
+    id: "qf2",
+    half: "left",
+    title: "QF2",
+    subtitle: "Left Half - Bottom Quarter",
+    last32: createDrawSlots(9, 8),
+    last16: createWinnerSlots("Last 16 slot", 4),
+    quarterFinal: createWinnerSlots("Quarter-final slot", 2),
+    winner: { label: "QF2 Winner", score: "___" }
+  },
+  {
+    id: "qf3",
+    half: "right",
+    title: "QF3",
+    subtitle: "Right Half - Top Quarter",
+    last32: createDrawSlots(17, 8),
+    last16: createWinnerSlots("Last 16 slot", 4),
+    quarterFinal: createWinnerSlots("Quarter-final slot", 2),
+    winner: { label: "QF3 Winner", score: "___" }
+  },
+  {
+    id: "qf4",
+    half: "right",
+    title: "QF4",
+    subtitle: "Right Half - Bottom Quarter",
+    last32: createDrawSlots(25, 8),
+    last16: createWinnerSlots("Last 16 slot", 4),
+    quarterFinal: createWinnerSlots("Quarter-final slot", 2),
+    winner: { label: "QF4 Winner", score: "___" }
+  }
+];
+
+export const DRAW_FINALS: DrawFinals = {
+  semiFinals: [
+    {
+      id: "sf1",
+      title: "Semi-Final 1",
+      players: [
+        { label: "QF1 Winner", score: "___" },
+        { label: "QF2 Winner", score: "___" }
+      ],
+      finalist: { label: "Finalist", score: "___" }
+    },
+    {
+      id: "sf2",
+      title: "Semi-Final 2",
+      players: [
+        { label: "QF3 Winner", score: "___" },
+        { label: "QF4 Winner", score: "___" }
+      ],
+      finalist: { label: "Finalist", score: "___" }
+    }
+  ],
+  final: {
+    players: [
+      { label: "Finalist", score: "___" },
+      { label: "Finalist", score: "___" }
+    ],
+    champion: { label: "Grand Winner", score: "___" }
+  }
+};
+
+export const DRAW_BRACKET_ROUNDS: DrawRound[] = [
+  {
+    id: "last32",
+    label: "Last 32",
+    matches: [
+      { id: "r32-1", label: "Match 1", players: [{ name: "Arran Kenna", seed: 1, score: "6", isWinner: true }, { name: "Luis Ortega", seed: 32, score: "2", isWinner: false }] },
+      { id: "r32-2", label: "Match 2", players: [{ name: "Mark Tan", seed: 16, score: "7", isWinner: true }, { name: "Daniel Kim", seed: 17, score: "6", isWinner: false }] },
+      { id: "r32-3", label: "Match 3", players: [{ name: "David Chen", seed: 8, score: "6", isWinner: true }, { name: "Nikhil Rao", seed: 25, score: "4", isWinner: false }] },
+      { id: "r32-4", label: "Match 4", players: [{ name: "Ethan Harker", seed: 9, score: "6", isWinner: false }, { name: "Rafael Santos", seed: 24, score: "7", isWinner: true }] },
+      { id: "r32-5", label: "Match 5", players: [{ name: "Simon Swenson", seed: 4, score: "6", isWinner: true }, { name: "Hiro Tanaka", seed: 29, score: "1", isWinner: false }] },
+      { id: "r32-6", label: "Match 6", players: [{ name: "Ben Lim", seed: 13, score: "5", isWinner: false }, { name: "Marco Silva", seed: 20, score: "7", isWinner: true }] },
+      { id: "r32-7", label: "Match 7", players: [{ name: "Clyde Densel Duran", seed: 5, score: "6", isWinner: false }, { name: "Miguel Reyes", seed: 28, score: "7", isWinner: true }] },
+      { id: "r32-8", label: "Match 8", players: [{ name: "Jason Lee", seed: 12, score: "6", isWinner: true }, { name: "Alex Nguyen", seed: 21, score: "3", isWinner: false }] },
+      { id: "r32-9", label: "Match 9", players: [{ name: "Noah Wong", seed: 2, score: "6", isWinner: true }, { name: "Arjun Mehta", seed: 31, score: "0", isWinner: false }] },
+      { id: "r32-10", label: "Match 10", players: [{ name: "Kevin Park", seed: 15, score: "4", isWinner: false }, { name: "Tomas Garcia", seed: 18, score: "6", isWinner: true }] },
+      { id: "r32-11", label: "Match 11", players: [{ name: "Wei Ming", seed: 7, score: "7", isWinner: true }, { name: "Phuc Tran", seed: 26, score: "5", isWinner: false }] },
+      { id: "r32-12", label: "Match 12", players: [{ name: "Paulo Mendes", seed: 10, score: "6", isWinner: true }, { name: "Jack Wilson", seed: 23, score: "4", isWinner: false }] },
+      { id: "r32-13", label: "Match 13", players: [{ name: "Andre Costa", seed: 3, score: "6", isWinner: true }, { name: "Kenji Sato", seed: 30, score: "3", isWinner: false }] },
+      { id: "r32-14", label: "Match 14", players: [{ name: "Owen Chua", seed: 14, score: "6", isWinner: true }, { name: "Krit Wong", seed: 19, score: "2", isWinner: false }] },
+      { id: "r32-15", label: "Match 15", players: [{ name: "Felix Lau", seed: 6, score: "7", isWinner: true }, { name: "Minh Le", seed: 27, score: "6", isWinner: false }] },
+      { id: "r32-16", label: "Match 16", players: [{ name: "Arthur Ho", seed: 11, score: "3", isWinner: false }, { name: "Viktor Petrov", seed: 22, score: "6", isWinner: true }] }
+    ]
+  },
+  {
+    id: "last16",
+    label: "Last 16",
+    matches: [
+      { id: "r16-1", label: "R16 Match 1", players: [{ name: "Arran Kenna", seed: 1, score: "6", isWinner: true }, { name: "Mark Tan", seed: 16, score: "3", isWinner: false }] },
+      { id: "r16-2", label: "R16 Match 2", players: [{ name: "David Chen", seed: 8, score: "7", isWinner: true }, { name: "Rafael Santos", seed: 24, score: "5", isWinner: false }] },
+      { id: "r16-3", label: "R16 Match 3", players: [{ name: "Simon Swenson", seed: 4, score: "6", isWinner: true }, { name: "Marco Silva", seed: 20, score: "4", isWinner: false }] },
+      { id: "r16-4", label: "R16 Match 4", players: [{ name: "Miguel Reyes", seed: 28, score: "6", isWinner: false }, { name: "Jason Lee", seed: 12, score: "7", isWinner: true }] },
+      { id: "r16-5", label: "R16 Match 5", players: [{ name: "Noah Wong", seed: 2, score: "6", isWinner: true }, { name: "Tomas Garcia", seed: 18, score: "2", isWinner: false }] },
+      { id: "r16-6", label: "R16 Match 6", players: [{ name: "Wei Ming", seed: 7, score: "5", isWinner: false }, { name: "Paulo Mendes", seed: 10, score: "7", isWinner: true }] },
+      { id: "r16-7", label: "R16 Match 7", players: [{ name: "Andre Costa", seed: 3, score: "6", isWinner: true }, { name: "Owen Chua", seed: 14, score: "1", isWinner: false }] },
+      { id: "r16-8", label: "R16 Match 8", players: [{ name: "Felix Lau", seed: 6, score: "4", isWinner: false }, { name: "Viktor Petrov", seed: 22, score: "6", isWinner: true }] }
+    ]
+  },
+  {
+    id: "quarterFinal",
+    label: "Quarter-Final",
+    matches: [
+      { id: "qf-1", label: "QF1", players: [{ name: "Arran Kenna", seed: 1, score: "6", isWinner: true }, { name: "David Chen", seed: 8, score: "4", isWinner: false }] },
+      { id: "qf-2", label: "QF2", players: [{ name: "Simon Swenson", seed: 4, score: "7", isWinner: true }, { name: "Jason Lee", seed: 12, score: "6", isWinner: false }] },
+      { id: "qf-3", label: "QF3", players: [{ name: "Noah Wong", seed: 2, score: "6", isWinner: true }, { name: "Paulo Mendes", seed: 10, score: "3", isWinner: false }] },
+      { id: "qf-4", label: "QF4", players: [{ name: "Andre Costa", seed: 3, score: "6", isWinner: false }, { name: "Viktor Petrov", seed: 22, score: "7", isWinner: true }] }
+    ]
+  },
+  {
+    id: "semiFinal",
+    label: "Semi-Final",
+    matches: [
+      { id: "sf-1", label: "Semi-Final 1", players: [{ name: "Arran Kenna", seed: 1, score: "—", isWinner: false }, { name: "Simon Swenson", seed: 4, score: "—", isWinner: false }] },
+      { id: "sf-2", label: "Semi-Final 2", players: [{ name: "Noah Wong", seed: 2, score: "—", isWinner: false }, { name: "Viktor Petrov", seed: 22, score: "—", isWinner: false }] }
+    ]
+  },
+  {
+    id: "final",
+    label: "Final",
+    matches: [
+      { id: "final-1", label: "Grand Final", players: [{ name: "Finalist TBD", score: "—", isWinner: false }, { name: "Finalist TBD", score: "—", isWinner: false }] }
+    ]
+  }
+];
+
+export const DEFAULT_DRAW_RESULTS: DrawMatchResult[] = DRAW_BRACKET_ROUNDS.flatMap((round) => (
+  round.matches.flatMap((match) => {
+    const winnerIndex = match.players.findIndex((player) => player.isWinner);
+    if (winnerIndex === -1) return [];
+
+    return [{
+      id: `draw-${match.id}`,
+      matchId: match.id,
+      roundId: round.id as DrawRoundId,
+      matchLabel: match.label,
+      p1Name: match.players[0].name,
+      p2Name: match.players[1].name,
+      p1Score: match.players[0].score,
+      p2Score: match.players[1].score,
+      winnerIndex: winnerIndex as 0 | 1,
+      proofFile: null,
+      updatedAt: '2026-05-13T00:00:00.000Z'
+    }];
+  })
+));

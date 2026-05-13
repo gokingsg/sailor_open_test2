@@ -3,10 +3,11 @@ import { motion, AnimatePresence, useScroll, useTransform } from 'framer-motion'
 import { Menu, X, Info, BookOpen, Gift, UserPlus, MessageSquare } from 'lucide-react';
 import { ASSETS } from '../constants';
 import { UserProfile } from './UserProfile';
+import { AppView } from '../types';
 
 interface MobileNavProps {
-  activeView: 'home' | 'history' | 'leaderboard' | 'registration' | 'test';
-  onNavigate: (view: 'home' | 'history' | 'leaderboard' | 'registration' | 'test') => void;
+  activeView: AppView;
+  onNavigate: (view: AppView) => void;
 }
 
 export const MobileNav = ({ activeView, onNavigate }: MobileNavProps) => {
@@ -30,7 +31,7 @@ export const MobileNav = ({ activeView, onNavigate }: MobileNavProps) => {
     }
   };
 
-  const handleNavClick = (view: 'home' | 'history' | 'leaderboard' | 'registration' | 'test') => {
+  const handleNavClick = (view: AppView) => {
     setIsOpen(false);
     onNavigate(view);
   };

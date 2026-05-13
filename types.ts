@@ -24,6 +24,8 @@ export enum AnimationVariant {
 }
 
 // Tournament specific types
+export type AppView = 'home' | 'draw' | 'history' | 'leaderboard' | 'registration' | 'test';
+
 export interface MatchmakerOption {
   id: string;
   tag?: string;
@@ -81,4 +83,73 @@ export interface MatchRecord {
   status: 'Completed' | 'Walkover' | 'In Progress' | 'Cancelled';
   player1: MatchPlayer;
   player2: MatchPlayer;
+}
+
+export type DrawHalf = 'left' | 'right';
+
+export interface DrawSlot {
+  label: string;
+  score: string;
+  meta?: string;
+}
+
+export interface DrawQuarter {
+  id: string;
+  half: DrawHalf;
+  title: string;
+  subtitle: string;
+  last32: DrawSlot[];
+  last16: DrawSlot[];
+  quarterFinal: DrawSlot[];
+  winner: DrawSlot;
+}
+
+export interface DrawSemiFinal {
+  id: string;
+  title: string;
+  players: DrawSlot[];
+  finalist: DrawSlot;
+}
+
+export interface DrawFinals {
+  semiFinals: DrawSemiFinal[];
+  final: {
+    players: DrawSlot[];
+    champion: DrawSlot;
+  };
+}
+
+export interface DrawCompetitor {
+  name: string;
+  seed?: number;
+  score: string;
+  isWinner: boolean;
+}
+
+export type DrawRoundId = 'last32' | 'last16' | 'quarterFinal' | 'semiFinal' | 'final';
+
+export interface DrawMatch {
+  id: string;
+  label: string;
+  players: [DrawCompetitor, DrawCompetitor];
+}
+
+export interface DrawRound {
+  id: DrawRoundId;
+  label: string;
+  matches: DrawMatch[];
+}
+
+export interface DrawMatchResult {
+  id: string;
+  matchId: string;
+  roundId: DrawRoundId;
+  matchLabel: string;
+  p1Name: string;
+  p2Name: string;
+  p1Score: string;
+  p2Score: string;
+  winnerIndex: 0 | 1;
+  proofFile?: string | null;
+  updatedAt: string;
 }

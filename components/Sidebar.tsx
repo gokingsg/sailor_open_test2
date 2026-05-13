@@ -1,10 +1,11 @@
 import React from 'react';
 import { Info, BookOpen, Gift, UserPlus, MessageSquare, ChevronLeft, ChevronRight } from 'lucide-react';
 import { ASSETS } from '../constants';
+import { AppView } from '../types';
 
 interface SidebarProps {
-  activeView: 'home' | 'history' | 'leaderboard' | 'registration' | 'test';
-  onNavigate: (view: 'home' | 'history' | 'leaderboard' | 'registration' | 'test') => void;
+  activeView: AppView;
+  onNavigate: (view: AppView) => void;
   isCollapsed: boolean;
   onToggle: () => void;
 }
