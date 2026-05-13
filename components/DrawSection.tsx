@@ -221,11 +221,13 @@ const DrawMatchModal = ({
   selection,
   marketLabel,
   categoryLabel,
+  onPlayerClick,
   onClose
 }: {
   selection: SelectedDrawMatch;
   marketLabel: string;
   categoryLabel: string;
+  onPlayerClick?: (playerName: string) => void;
   onClose: () => void;
 }) => {
   const { match, roundLabel, focusPlayerName } = selection;
@@ -292,7 +294,16 @@ const DrawMatchModal = ({
               <div key={`${match.id}-${player.name}`} className="flex items-center justify-between gap-4">
                 <div className="min-w-0">
                   <div className="flex min-w-0 items-center gap-2">
-                    <span className="truncate text-sm font-black text-[#000080]">{player.name}</span>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        onClose();
+                        onPlayerClick?.(player.name);
+                      }}
+                      className="min-w-0 truncate text-left text-sm font-black text-[#000080] transition-colors hover:text-[#4c8bf5] hover:underline focus:outline-none focus:ring-2 focus:ring-[#4c8bf5]/30"
+                    >
+                      {player.name}
+                    </button>
                     {isFocus && <span className="text-xs font-black text-[#4c8bf5]/80">(Selected)</span>}
                     {isWinner && <CheckCircle size={16} className="shrink-0 text-green-500" />}
                   </div>
@@ -311,7 +322,11 @@ const DrawMatchModal = ({
   );
 };
 
-export const DrawSection = () => {
+interface DrawSectionProps {
+  onPlayerClick?: (playerName: string) => void;
+}
+
+export const DrawSection = ({ onPlayerClick }: DrawSectionProps) => {
   const [activeMarket, setActiveMarket] = useState<DrawMarketId>('globalFinals');
   const [activeCategory, setActiveCategory] = useState<DrawCategoryId>('men');
   const [drawResults, setDrawResults] = useState(() => loadDrawResults('globalFinals', 'men'));
@@ -483,7 +498,13 @@ export const DrawSection = () => {
 
       <AnimatePresence>
         {selectedMatch && (
-          <DrawMatchModal selection={selectedMatch} marketLabel={activeMarketOption.label} categoryLabel={activeCategoryOption.label} onClose={() => setSelectedMatch(null)} />
+          <DrawMatchModal
+            selection={selectedMatch}
+            marketLabel={activeMarketOption.label}
+            categoryLabel={activeCategoryOption.label}
+            onPlayerClick={onPlayerClick}
+            onClose={() => setSelectedMatch(null)}
+          />
         )}
       </AnimatePresence>
     </section>

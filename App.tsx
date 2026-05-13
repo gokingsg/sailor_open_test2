@@ -18,6 +18,7 @@ import { AppView } from './types';
 export default function App() {
   const [activeView, setActiveView] = useState<AppView>('home');
   const [selectedPlayer, setSelectedPlayer] = useState<string | null>(null);
+  const [historyBackView, setHistoryBackView] = useState<AppView>('leaderboard');
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
 
   const handleNavigate = (view: AppView) => {
@@ -43,8 +44,9 @@ export default function App() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  const handlePlayerClick = (playerName: string) => {
+  const handlePlayerClick = (playerName: string, returnView: AppView = 'leaderboard') => {
     setSelectedPlayer(playerName);
+    setHistoryBackView(returnView);
     setActiveView('history');
     setIsSidebarCollapsed(true); // Ensure collapsed when drilling down
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -76,7 +78,7 @@ export default function App() {
           </div>
         ) : activeView === 'draw' ? (
           <div className="flex-1 flex flex-col">
-            <DrawSection />
+            <DrawSection onPlayerClick={(playerName) => handlePlayerClick(playerName, 'draw')} />
             <Footer />
           </div>
         ) : activeView === 'history' ? (
@@ -84,7 +86,7 @@ export default function App() {
             <MatchHistorySection 
               filterPlayer={selectedPlayer} 
               onBack={() => {
-                setActiveView('leaderboard');
+                setActiveView(historyBackView);
                 setSelectedPlayer(null);
               }}
             />
