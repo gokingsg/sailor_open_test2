@@ -14,8 +14,8 @@ const CONNECTOR_X = 12;
 const CONTENT_X = 26;
 const SOURCE_OVERLAP = 22;
 
-const ROUND_BACKGROUNDS = ['#ffffff', '#f8fbff', '#f3f8ff', '#eef5ff', '#eaf2ff', '#f6f8ff'];
-const HEADER_BACKGROUNDS = ['#d3e3f6', '#c9ddf5', '#bdd5f1', '#b2ceee', '#a8c7eb', '#9fbfe7'];
+const ROUND_BACKGROUNDS = ['#ffffff', '#f8fbff', '#f3f8ff', '#eef5ff', '#eaf2ff', '#e5effd'];
+const HEADER_BACKGROUNDS = ['#d3e3f6', '#c9ddf5', '#bdd5f1', '#b2ceee', '#a8c7eb', '#97b9e3'];
 
 const getWinnerPlayerIndex = (match: DrawMatch) => (match.players[0].isWinner ? 0 : 1);
 const getPlayerY = (playerIndex: number) => (playerIndex === 0 ? PLAYER_ONE_Y : PLAYER_TWO_Y);
